@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет · FocusCorgi</title>
+    <!-- Google Font и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3436;
+        }
+
+        /* Шапка */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #4F46E5;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link i {
+            font-size: 16px;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-link.active {
+            color: #4F46E5;
+            background: #EEF2FF;
+        }
+
+        /* Основной контент */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Карточки */
+        .card {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title i {
+            color: #4F46E5;
+            font-size: 24px;
+        }
+
+        /* Профиль */
+        .profile-section {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.1);
+            border-color: #4F46E5;
+        }
+
+        .avatar-option.selected {
+            border-color: #4F46E5;
+            background: #EEF2FF;
+        }
+
+        .profile-form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .password-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .password-group input {
+            flex: 1;
+        }
+
+        .change-password-btn {
+            padding: 12px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .change-password-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .save-btn {
+            padding: 14px 28px;
+            background: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .save-btn:hover {
+            background: #4338CA;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #f8faff;
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid #eaeef5;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(79, 70, 229, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            color: #4F46E5;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Модальное окно для смены пароля */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: #4F46E5;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: #4338CA;
+        }
+
+        .modal-btn.secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .profile-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .save-btn {
+                align-self: center;
+            }
+            
+            .password-group {
+                flex-direction: column;
+            }
+            
+            .change-password-btn {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fa-solid fa-paw"></i>
+                <span>FocusCorgi</span>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">
+                    <i class="fa-solid fa-house"></i>
+                    Главная
+                </a>
+                <a href="#" class="nav-link active">
+                    <i class="fa-solid fa-user"></i>
+                    Личный кабинет
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Блок профиля -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-circle-user"></i>
+                    Профиль пользователя
+                </h2>
+                
+                <div class="profile-section">
+                    <!-- Аватарка и выбор -->
+                    <div class="avatar-section">
+                        <div class="avatar" id="avatar">
+                            <i class="fa-solid fa-dog" id="avatarIcon"></i>
+                        </div>
+                        
+                        <div class="avatar-selector" id="avatarSelector">
+                            <div class="avatar-option selected" data-icon="fa-dog">🐶</div>
+                            <div class="avatar-option" data-icon="fa-cat">🐱</div>
+                            <div class="avatar-option" data-icon="fa-fish">🐟</div>
+                            <div class="avatar-option" data-icon="fa-dove">🐦</div>
+                            <div class="avatar-option" data-icon="fa-otter">🦦</div>
+                            <div class="avatar-option" data-icon="fa-frog">🐸</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Форма с данными -->
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label>Имя пользователя</label>
+                            <input type="text" id="username" value="CorgiLover" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" value="corgi@focuscorgi.com" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Дата рождения</label>
+                            <input type="date" id="birthdate" value="1990-01-01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Пароль</label>
+                            <div class="password-group">
+                                <input type="password" id="password" value="password123" readonly>
+                                <button class="change-password-btn" id="changePasswordBtn">
+                                    <i class="fa-solid fa-key"></i> Сменить
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="save-btn" id="saveProfileBtn">
+                            <i class="fa-solid fa-check"></i> Сохранить изменения
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Статистика (только день/неделя/месяц) -->
+            <div class="card">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    Статистика
+                </h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>
+                        <div class="stat-value" id="todayStat">2ч 15м</div>
+                        <div class="stat-label">Сегодня</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="stat-value" id="weekStat">12ч 30м</div>
+                        <div class="stat-label">За неделю</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-calendar-alt"></i></div>
+                        <div class="stat-value" id="monthStat">48ч 45м</div>
+                        <div class="stat-label">За месяц</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Модальное окно для смены пароля -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Смена пароля</h3>
+            
+            <div class="form-group">
+                <label>Текущий пароль</label>
+                <input type="password" id="currentPassword" placeholder="••••••••">
+            </div>
+            
+            <div class="form-group">
+                <label>Новый пароль</label>
+                <input type="password" id="newPassword" placeholder="••••••••" minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label>Подтвердите новый пароль</label>
+                <input type="password" id="confirmNewPassword" placeholder="••••••••" minlength="6">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelPasswordBtn">Отмена</button>
+                <button class="modal-btn primary" id="savePasswordBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- Данные пользователя ----------
+        const userData = {
+            username: 'CorgiLover',
+            email: 'corgi@focuscorgi.com',
+            birthdate: '1990-01-01',
+            password: 'password123',
+            avatar: 'fa-dog'
+        };
+        
+        // ---------- Элементы ----------
+        const avatarIcon = document.getElementById('avatarIcon');
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const birthdateInput = document.getElementById('birthdate');
+        const passwordInput = document.getElementById('password');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const passwordModal = document.getElementById('passwordModal');
+        const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+        const savePasswordBtn = document.getElementById('savePasswordBtn');
+        const currentPassword = document.getElementById('currentPassword');
+        const newPassword = document.getElementById('newPassword');
+        const confirmNewPassword = document.getElementById('confirmNewPassword');
+        
+        // ---------- Загрузка данных пользователя ----------
+        function loadUserData() {
+            usernameInput.value = userData.username;
+            emailInput.value = userData.email;
+            birthdateInput.value = userData.birthdate;
+            passwordInput.value = userData.password;
+            
+            // Устанавливаем аватар
+            avatarIcon.className = `fa-solid ${userData.avatar}`;
+            
+            // Подсвечиваем выбранный аватар
+            avatarOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.icon === userData.avatar) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+        
+        // ---------- Выбор аватара ----------
+        avatarOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                avatarOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const icon = this.dataset.icon;
+                avatarIcon.className = `fa-solid ${icon}`;
+                userData.avatar = icon;
+            });
+        });
+        
+        // ---------- Сохранение профиля ----------
+        saveProfileBtn.addEventListener('click', function() {
+            // Обновляем данные (кроме имени и email — они readonly)
+            userData.birthdate = birthdateInput.value;
+            
+            alert('✅ Изменения сохранены! (демо-режим)');
+            console.log('Сохранённые данные:', userData);
+        });
+        
+        // ---------- Смена пароля ----------
+        changePasswordBtn.addEventListener('click', function() {
+            passwordModal.classList.add('active');
+            
+            // Очищаем поля
+            currentPassword.value = '';
+            newPassword.value = '';
+            confirmNewPassword.value = '';
+        });
+        
+        cancelPasswordBtn.addEventListener('click', function() {
+            passwordModal.classList.remove('active');
+        });
+        
+        savePasswordBtn.addEventListener('click', function() {
+            // Проверка текущего пароля
+            if (currentPassword.value !== userData.password) {
+                alert('❌ Неверный текущий пароль');
+                return;
+            }
+            
+            // Проверка нового пароля
+            if (newPassword.value.length < 6) {
+                alert('❌ Новый пароль должен быть минимум 6 символов');
+                return;
+            }
+            
+            // Проверка совпадения
+            if (newPassword.value !== confirmNewPassword.value) {
+                alert('❌ Новые пароли не совпадают');
+                return;
+            }
+            
+            // Сохраняем новый пароль
+            userData.password = newPassword.value;
+            passwordInput.value = userData.password;
+            
+            alert('✅ Пароль успешно изменён!');
+            passwordModal.classList.remove('active');
+        });
+        
+        // Закрытие модалки по клику вне её
+        window.addEventListener('click', function(e) {
+            if (e.target === passwordModal) {
+                passwordModal.classList.remove('active');
+            }
+        });
+        
+        // ---------- Загрузка при старте ----------
+        loadUserData();
+    </script>
+</body>
+</html>
