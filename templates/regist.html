@@ -1,242 +1,18 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация · FocusCorgi</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'css/regist.css' %}" />
     <!-- Подключаем Google Font для красоты -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
     <!-- Иконки Font Awesome для глазика -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 440px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo svg {
-            width: 48px;
-            height: 48px;
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 6px;
-        }
-
-        /* Контейнер для поля с глазом */
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .password-container input {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            padding-right: 45px; /* место для глазика */
-        }
-
-        .password-container input:focus {
-            outline: none;
-            border-color: #4F46E5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #888;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s;
-        }
-
-        .toggle-password:hover {
-            color: #4F46E5;
-        }
-
-        /* Обычное поле (не пароль) */
-        .input-group input:not(.password-container input) {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .input-group input:not(.password-container input):focus {
-            outline: none;
-            border-color: #4F46E5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        .input-group input::placeholder {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        .hint {
-            display: block;
-            font-size: 12px;
-            color: #888;
-            margin-top: 4px;
-            margin-left: 4px;
-        }
-
-        /* Сообщение об ошибке/успехе */
-        .password-match {
-            font-size: 12px;
-            margin-top: 4px;
-            margin-left: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .match-success {
-            color: #10b981;
-        }
-
-        .match-error {
-            color: #ef4444;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: #4F46E5;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn:hover {
-            background: #4338CA;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: #a5a5a5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .login-link a {
-            color: #4F46E5;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .login-link a:hover {
-            color: #4338CA;
-            text-decoration: underline;
-        }
-
-        /* Адаптивность */
-        @media (max-width: 480px) {
-            .card {
-                padding: 30px 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/regist.css' %}" />
 </head>
 <body>
     <div class="container">
@@ -306,7 +82,7 @@
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
             const icon = button.querySelector('i');
-            
+
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -329,7 +105,7 @@
         function checkPasswordMatch() {
             const pass = password.value;
             const confirm = confirmPassword.value;
-            
+
             // Если оба поля заполнены
             if (pass && confirm) {
                 if (pass === confirm) {
@@ -355,13 +131,13 @@
         // Обработка отправки формы
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Финальная проверка перед отправкой
             if (password.value !== confirmPassword.value) {
                 alert('❌ Пароли не совпадают!');
                 return;
             }
-            
+
             if (password.value.length < 6) {
                 alert('❌ Пароль должен быть минимум 6 символов');
                 return;
@@ -369,7 +145,7 @@
 
             // Здесь будет отправка на бэкенд через 3 месяца :)
             // Сейчас просто имитируем успешную регистрацию
-    
+
             // Сохраняем в localStorage что пользователь залогинен (для демо)
             localStorage.setItem('user', JSON.stringify({
                 username: username.value,
