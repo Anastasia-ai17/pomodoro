@@ -1,3 +1,27 @@
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+
+# Virtual environments
+.venv/
+.env/
+env/
+venv/
+
+# Tooling
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Django/Poetry artifacts
+staticfiles/
+media/
+poetry.lock
 # Python
 *.py[cod]
 *$py.class
