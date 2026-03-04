@@ -1,0 +1,417 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusCorgi · Помодоро таймер</title>
+    <!-- Google Font и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fa-solid fa-paw"></i>
+                <span>FocusCorgi</span>
+            </div>
+            <nav class="nav">
+                <a href="{% url 'index' %}" class="nav-link active">
+                    <i class="fa-solid fa-house"></i>
+                    Главная
+                </a>
+                <a href="{% url 'person' %}"  class="nav-link">
+                    <i class="fa-solid fa-user"></i>
+                    Личный кабинет
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Панель звука -->
+    <div class="sound-panel" id="soundPanel" style="display: none;">
+        <div class="sound-content">
+            <i class="fa-solid fa-bell fa-shake"></i>
+            <span>⏰ Время вышло! 👆 Нажми на уведомление</span>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="container">
+            <!-- Большой таймер -->
+            <div class="timer-card">
+                <div class="timer-status">
+                    <span class="mode-badge" id="modeBadge">Работа</span>
+                    <span class="cycle-counter" id="cycleCounter">Цикл 1/4</span>
+                </div>
+
+                <div class="timer-circle">
+                    <div class="timer-display" id="timer">25:00</div>
+                </div>
+
+                <div class="timer-controls">
+                    <button class="control-btn primary" id="startBtn">
+                        <i class="fa-solid fa-play"></i> Старт
+                    </button>
+                    <button class="control-btn" id="pauseBtn">
+                        <i class="fa-solid fa-pause"></i> Пауза
+                    </button>
+                    <button class="control-btn" id="resetBtn">
+                        <i class="fa-solid fa-stop"></i> Сброс
+                    </button>
+                </div>
+            </div>
+
+            <!-- Настройки -->
+            <div class="settings-section">
+                <h3>
+                    <i class="fa-solid fa-sliders"></i>
+                    Настройки времени
+                </h3>
+
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label><i class="fa-regular fa-clock"></i> Работа (мин)</label>
+                        <div class="slider-container">
+                            <input type="range" id="workSlider" class="slider" min="1" max="60" value="25" step="1">
+                            <input type="number" id="workInput" class="number-input" min="1" max="60" value="25" step="1">
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label><i class="fa-regular fa-mug-saucer"></i> Отдых (мин)</label>
+                        <div class="slider-container">
+                            <input type="range" id="shortBreakSlider" class="slider" min="1" max="30" value="5" step="1">
+                            <input type="number" id="shortBreakInput" class="number-input" min="1" max="30" value="5" step="1">
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label><i class="fa-regular fa-sun"></i> Большой перерыв (мин)</label>
+                        <div class="slider-container">
+                            <input type="range" id="longBreakSlider" class="slider" min="1" max="60" value="15" step="1">
+                            <input type="number" id="longBreakInput" class="number-input" min="1" max="60" value="15" step="1">
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label><i class="fa-solid fa-rotate-right"></i> Циклов до большого</label>
+                        <div class="slider-container">
+                            <input type="range" id="cyclesSlider" class="slider" min="1" max="10" value="4" step="1">
+                            <input type="number" id="cyclesInput" class="number-input" min="1" max="10" value="4" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="reset-settings-btn" id="resetSettingsBtn">
+                    <i class="fa-solid fa-undo"></i> Сбросить на 25/5/15
+                </button>
+            </div>
+
+            <!-- Описание метода Помодоро (НОВЫЙ ТЕКСТ) -->
+            <div class="info-section">
+                <h2>🍅 Что такое Pomodoro?</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <i class="fa-solid fa-tomato info-icon"></i>
+                        <h3>Метод помидора</h3>
+                        <p>Техника тайм-менеджмента, разработанная Франческо Чирилло в конце 1980-х годов. Работа разбивается на сменяющие друг друга интервалы: время продуктивной работы сменяется коротким отдыхом, а после нескольких циклов следует длинный перерыв. Название пошло от кухонного таймера в форме помидора.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fa-solid fa-brain info-icon"></i>
+                        <h3>Почему это работает</h3>
+                        <p>Короткие интервалы снижают тревожность перед большими задачами, частые перерывы помогают сохранять свежесть внимания, а ритмичность вырабатывает привычку. Мозг настраивается на ритм: поработал — отдохни.</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fa-solid fa-sliders info-icon"></i>
+                        <h3>Настройте под себя</h3>
+                        <p>По умолчанию таймер работает в классическом режиме: 25 минут работы, 5 минут отдыха и 15 минут большого перерыва после 4 циклов. Но вы можете изменить любое значение в настройках — подберите идеальный ритм лично для себя.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Аудио -->
+    <audio id="notificationSound" preload="auto" loop>
+        <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+        <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Проверяем статус уведомлений при загрузке (но НЕ запрашиваем)
+        if (Notification.permission === 'granted') {
+            console.log('Уведомления уже разрешены');
+        } else if (Notification.permission === 'denied') {
+            console.log('Уведомления заблокированы пользователем');
+        }
+        // Если default - ничего не делаем, пользователь решит при входе
+
+        // ---------- Элементы ----------
+        const timerDisplay = document.getElementById('timer');
+        const modeBadge = document.getElementById('modeBadge');
+        const cycleCounter = document.getElementById('cycleCounter');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const soundPanel = document.getElementById('soundPanel');
+        const notificationSound = document.getElementById('notificationSound');
+
+        const workSlider = document.getElementById('workSlider');
+        const workInput = document.getElementById('workInput');
+        const shortBreakSlider = document.getElementById('shortBreakSlider');
+        const shortBreakInput = document.getElementById('shortBreakInput');
+        const longBreakSlider = document.getElementById('longBreakSlider');
+        const longBreakInput = document.getElementById('longBreakInput');
+        const cyclesSlider = document.getElementById('cyclesSlider');
+        const cyclesInput = document.getElementById('cyclesInput');
+        const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+
+        // ---------- Состояние ----------
+        let currentMode = 'work';
+        let timeLeft = 25 * 60;
+        let timerInterval = null;
+        let isRunning = false;
+        let workCyclesCompleted = 0;
+
+        // Значения по умолчанию
+        const DEFAULTS = { work: 25, shortBreak: 5, longBreak: 15, cycles: 4 };
+
+        // Текущие настройки
+        let settings = {
+            work: DEFAULTS.work,
+            shortBreak: DEFAULTS.shortBreak,
+            longBreak: DEFAULTS.longBreak,
+            cyclesBeforeLongBreak: DEFAULTS.cycles
+        };
+
+        // ---------- Звук и уведомления ----------
+        function playAlarmAndNotify() {
+            soundPanel.style.display = 'flex';
+
+            notificationSound.loop = true;
+            notificationSound.volume = 1.0;
+            notificationSound.play().catch(e => console.log('Audio error:', e));
+
+            const modeText = currentMode === 'work' ? '🍅 Работа' :
+                            (currentMode === 'shortBreak' ? '☕ Отдых' : '🌟 Большой перерыв');
+
+            const nextModeText = currentMode === 'work' ?
+                ((workCyclesCompleted + 1) % settings.cyclesBeforeLongBreak === 0 ? 'большой перерыв' : 'отдых')
+                : 'работу';
+
+            if (Notification.permission === 'granted') {
+                const notification = new Notification('⏰ FocusCorgi', {
+                    body: `${modeText} завершена!\nСледующее: ${nextModeText}\n\n👇 Нажми чтобы выключить звук`,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/564/564619.png',
+                    requireInteraction: true,
+                    silent: true
+                });
+
+                notification.onclick = function() {
+                    stopAlarm();
+                    window.focus();
+                };
+            } else if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
+        }
+
+        function stopAlarm() {
+            notificationSound.pause();
+            notificationSound.currentTime = 0;
+            notificationSound.loop = false;
+            soundPanel.style.display = 'none';
+        }
+
+        soundPanel.addEventListener('click', stopAlarm);
+
+        // ---------- Таймер ----------
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            timerDisplay.textContent = formatTime(timeLeft);
+            document.title = `🍅 ${formatTime(timeLeft)} - FocusCorgi`;
+        }
+
+        function updateUIForMode() {
+            switch(currentMode) {
+                case 'work':
+                    modeBadge.textContent = '🔴 Работа';
+                    modeBadge.style.background = '#EEF2FF';
+                    modeBadge.style.color = '#4F46E5';
+                    break;
+                case 'shortBreak':
+                    modeBadge.textContent = '🟢 Отдых';
+                    modeBadge.style.background = '#E8F5E9';
+                    modeBadge.style.color = '#2E7D32';
+                    break;
+                case 'longBreak':
+                    modeBadge.textContent = '🔵 Большой перерыв';
+                    modeBadge.style.background = '#E3F2FD';
+                    modeBadge.style.color = '#1565C0';
+                    break;
+            }
+
+            cycleCounter.textContent = currentMode === 'work'
+                ? `Цикл ${workCyclesCompleted + 1}/${settings.cyclesBeforeLongBreak}`
+                : `Перерыв · Циклов: ${workCyclesCompleted}`;
+        }
+
+        function switchToNextMode() {
+            if (currentMode === 'work') {
+                workCyclesCompleted++;
+                if (workCyclesCompleted % settings.cyclesBeforeLongBreak === 0) {
+                    setMode('longBreak');
+                } else {
+                    setMode('shortBreak');
+                }
+            } else {
+                setMode('work');
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+
+            if (mode === 'work') {
+                timeLeft = settings.work * 60;
+            } else if (mode === 'shortBreak') {
+                timeLeft = settings.shortBreak * 60;
+            } else {
+                timeLeft = settings.longBreak * 60;
+            }
+
+            updateDisplay();
+            updateUIForMode();
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timerInterval = null;
+            document.title = 'FocusCorgi';
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+
+            isRunning = true;
+
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                }
+
+                if (timeLeft === 0) {
+                    pauseTimer();
+                    playAlarmAndNotify();
+                    switchToNextMode();
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        // ---------- Обработчики кнопок ----------
+        startBtn.addEventListener('click', () => {
+            if (isRunning) {
+                pauseTimer();
+            }
+            workCyclesCompleted = 0;
+            setMode('work');
+            startTimer();
+        });
+
+        pauseBtn.addEventListener('click', pauseTimer);
+
+        resetBtn.addEventListener('click', () => {
+            stopAlarm();
+            pauseTimer();
+            workCyclesCompleted = 0;
+            setMode('work');
+        });
+
+        // ---------- Настройки ----------
+        function updateSettings() {
+            settings.work = parseInt(workSlider.value);
+            settings.shortBreak = parseInt(shortBreakSlider.value);
+            settings.longBreak = parseInt(longBreakSlider.value);
+            settings.cyclesBeforeLongBreak = parseInt(cyclesSlider.value);
+
+            workInput.value = settings.work;
+            shortBreakInput.value = settings.shortBreak;
+            longBreakInput.value = settings.longBreak;
+            cyclesInput.value = settings.cyclesBeforeLongBreak;
+
+            if (!isRunning) {
+                setMode(currentMode);
+            }
+        }
+
+        workSlider.addEventListener('input', (e) => {
+            workInput.value = e.target.value;
+            updateSettings();
+        });
+
+        workInput.addEventListener('change', (e) => {
+            let val = Math.min(60, Math.max(1, parseInt(e.target.value) || 25));
+            workSlider.value = val;
+            updateSettings();
+        });
+
+        shortBreakSlider.addEventListener('input', (e) => {
+            shortBreakInput.value = e.target.value;
+            updateSettings();
+        });
+
+        shortBreakInput.addEventListener('change', (e) => {
+            let val = Math.min(30, Math.max(1, parseInt(e.target.value) || 5));
+            shortBreakSlider.value = val;
+            updateSettings();
+        });
+
+        longBreakSlider.addEventListener('input', (e) => {
+            longBreakInput.value = e.target.value;
+            updateSettings();
+        });
+
+        longBreakInput.addEventListener('change', (e) => {
+            let val = Math.min(60, Math.max(1, parseInt(e.target.value) || 15));
+            longBreakSlider.value = val;
+            updateSettings();
+        });
+
+        cyclesSlider.addEventListener('input', (e) => {
+            cyclesInput.value = e.target.value;
+            updateSettings();
+        });
+
+        cyclesInput.addEventListener('change', (e) => {
+            let val = Math.min(10, Math.max(1, parseInt(e.target.value) || 4));
+            cyclesSlider.value = val;
+            updateSettings();
+        });
+
+        resetSettingsBtn.addEventListener('click', () => {
+            workSlider.value = DEFAULTS.work;
+            shortBreakSlider.value = DEFAULTS.shortBreak;
+            longBreakSlider.value = DEFAULTS.longBreak;
+            cyclesSlider.value = DEFAULTS.cycles;
+            updateSettings();
+        });
+
+        setMode('work');
+    </script>
+</body>
+</html>
