@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,10 +58,11 @@ ROOT_URLCONF = 'myproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -123,3 +126,11 @@ REST_FRAMEWORK = {
     ]
 }
 AUTH_USER_MODEL = 'users.User'
+
+# Куда перенаправлять после входа
+LOGIN_REDIRECT_URL = '/'  # на главную
+
+# Куда перенаправлять после выхода
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+# URL страницы входа (для декоратора login_required)
+LOGIN_URL = '/accounts/login/'
