@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserRegistrationSerializer, LoginSerializer
+from .serializers import UserRegistrationSerializer, LoginSerializer, UserThemeSerializer
 
 
 @api_view(['POST'])
@@ -77,3 +77,31 @@ def protected_view(request):
             "email": request.user.email
         }
     })
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def user_theme(request):
+    user = request.user
+    
+    if request.method == 'GET':
+        serializer = UserThemeSerializer(user)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+        serializer = UserThemeSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+@api_view(['GET', 'POST'])
+def guest_theme(request):
+    if request.method == 'GET':
+        theme = request.COOKIES.get('theme', 'system')
+        return Response({'theme': theme})
+    
+    elif request.method == 'POST':
+        theme = request.data.get('theme', 'system')
+        response = Response({'theme': theme, 'message': 'Тема сохранена в cookies'})
+        response.set_cookie('theme', theme, max_age=60*60*24*365) 
+        return response
