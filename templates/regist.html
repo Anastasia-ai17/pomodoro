@@ -5,18 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация · FocusCorgi</title>
-    <link rel="stylesheet" href="{% static 'css/regist.css' %}" />
-    <!-- Подключаем Google Font для красоты -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-    <!-- Иконки Font Awesome для глазика -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/regist.css' %}" />
 </head>
 <body>
     <div class="container">
         <div class="card">
+            <!-- Кнопка переключения темы (добавлена) -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
+
             <!-- Логотип -->
             <div class="logo">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,7 +81,37 @@
     </div>
 
     <script>
-        // Функция для показа/скрытия пароля
+        // ---------- Тёмная тема ----------
+        const themeToggle = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                if (themeToggle) themeToggle.classList.add('dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                if (themeToggle) themeToggle.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        }
+        
+        // Загрузка сохранённой темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // ---------- Функции для формы ----------
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
             const icon = button.querySelector('i');
@@ -94,19 +127,18 @@
             }
         }
 
-        // Получаем элементы
         const password = document.getElementById('password');
         const confirmPassword = document.getElementById('confirmPassword');
         const matchIndicator = document.getElementById('passwordMatchIndicator');
         const submitBtn = document.getElementById('submitBtn');
         const form = document.getElementById('registerForm');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
 
-        // Функция проверки совпадения паролей
         function checkPasswordMatch() {
             const pass = password.value;
             const confirm = confirmPassword.value;
 
-            // Если оба поля заполнены
             if (pass && confirm) {
                 if (pass === confirm) {
                     matchIndicator.innerHTML = '<i class="fa-solid fa-check-circle"></i> Пароли совпадают';
@@ -118,21 +150,17 @@
                     submitBtn.disabled = true;
                 }
             } else {
-                // Если одно из полей пустое
                 matchIndicator.innerHTML = '';
-                submitBtn.disabled = false; // Разблокируем, пусть форма сама проверяет required
+                submitBtn.disabled = false;
             }
         }
 
-        // Слушаем изменения в полях паролей
         password.addEventListener('input', checkPasswordMatch);
         confirmPassword.addEventListener('input', checkPasswordMatch);
 
-        // Обработка отправки формы
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Финальная проверка перед отправкой
             if (password.value !== confirmPassword.value) {
                 alert('❌ Пароли не совпадают!');
                 return;
@@ -143,25 +171,27 @@
                 return;
             }
 
-            // Здесь будет отправка на бэкенд через 3 месяца :)
-            // Сейчас просто имитируем успешную регистрацию
+            if (!usernameInput.value || !emailInput.value) {
+                alert('❌ Заполните все поля');
+                return;
+            }
 
-            // Сохраняем в localStorage что пользователь залогинен (для демо)
-            localStorage.setItem('user', JSON.stringify({
-                username: username.value,
-                email: email.value,
-                isLoggedIn: true
-            }));
+            const userData = {
+                username: usernameInput.value,
+                email: emailInput.value,
+                isLoggedIn: true,
+                registrationDate: new Date().toISOString()
+            };
+            
+            localStorage.setItem('user', JSON.stringify(userData));
 
-            // После успешной регистрации
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
-            // Перенаправляем на главную
+            
             window.location.href = "{% url 'index' %}";
         });
 
-        // При загрузке страницы проверяем (на всякий случай)
         checkPasswordMatch();
     </script>
 </body>

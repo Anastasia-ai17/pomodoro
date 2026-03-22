@@ -1,225 +1,374 @@
-   
-      * {
-           margin: 0;
-           padding: 0;
-           box-sizing: border-box;
-       }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-       body {
-           font-family: 'Inter', sans-serif;
-           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-           min-height: 100vh;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           padding: 20px;
-       }
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background 0.3s ease;
+}
 
-       .container {
-           width: 100%;
-           max-width: 440px;
-       }
+.container {
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+}
 
-       .card {
-           background: white;
-           border-radius: 20px;
-           padding: 40px 30px;
-           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-           animation: slideUp 0.5s ease;
-       }
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.5s ease;
+    position: relative;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
 
-       @keyframes slideUp {
-           from {
-               opacity: 0;
-               transform: translateY(20px);
-           }
-           to {
-               opacity: 1;
-               transform: translateY(0);
-           }
-       }
+/* Кнопка переключения темы */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #f0f0f0;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
 
-       .logo {
-           text-align: center;
-           margin-bottom: 20px;
-       }
+.theme-toggle i {
+    font-size: 18px;
+    transition: all 0.3s ease;
+    position: absolute;
+}
 
-       .logo svg {
-           width: 48px;
-           height: 48px;
-       }
+.theme-toggle .fa-moon {
+    opacity: 1;
+    transform: translateY(0);
+    color: #4F46E5;
+}
 
-       h2 {
-           text-align: center;
-           font-size: 28px;
-           font-weight: 600;
-           color: #1a1a1a;
-           margin-bottom: 8px;
-       }
+.theme-toggle .fa-sun {
+    opacity: 0;
+    transform: translateY(20px);
+    color: #f39c12;
+}
 
-       .subtitle {
-           text-align: center;
-           color: #666;
-           font-size: 14px;
-           margin-bottom: 30px;
-       }
+.theme-toggle.dark .fa-moon {
+    opacity: 0;
+    transform: translateY(-20px);
+}
 
-       .input-group {
-           margin-bottom: 20px;
-       }
+.theme-toggle.dark .fa-sun {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-       .input-group label {
-           display: block;
-           font-size: 14px;
-           font-weight: 500;
-           color: #333;
-           margin-bottom: 6px;
-       }
+.theme-toggle:hover {
+    transform: scale(1.05);
+    background: #e0e0e0;
+}
 
-       /* Контейнер для поля с глазом */
-       .password-container {
-           position: relative;
-           display: flex;
-           align-items: center;
-       }
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-       .password-container input {
-           width: 100%;
-           padding: 12px 16px;
-           font-size: 15px;
-           border: 2px solid #e1e1e1;
-           border-radius: 12px;
-           transition: all 0.3s ease;
-           font-family: 'Inter', sans-serif;
-           padding-right: 45px; /* место для глазика */
-       }
+.logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-       .password-container input:focus {
-           outline: none;
-           border-color: #4F46E5;
-           box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-       }
+.logo svg {
+    width: 48px;
+    height: 48px;
+}
 
-       .toggle-password {
-           position: absolute;
-           right: 15px;
-           background: none;
-           border: none;
-           cursor: pointer;
-           color: #888;
-           font-size: 18px;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           transition: color 0.2s;
-       }
+h2 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
 
-       .toggle-password:hover {
-           color: #4F46E5;
-       }
+.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 30px;
+    transition: color 0.3s ease;
+}
 
-       /* Обычное поле (не пароль) */
-       .input-group input:not(.password-container input) {
-           width: 100%;
-           padding: 12px 16px;
-           font-size: 15px;
-           border: 2px solid #e1e1e1;
-           border-radius: 12px;
-           transition: all 0.3s ease;
-           font-family: 'Inter', sans-serif;
-       }
+.input-group {
+    margin-bottom: 20px;
+}
 
-       .input-group input:not(.password-container input):focus {
-           outline: none;
-           border-color: #4F46E5;
-           box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-       }
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+}
 
-       .input-group input::placeholder {
-           color: #aaa;
-           font-size: 14px;
-       }
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
 
-       .hint {
-           display: block;
-           font-size: 12px;
-           color: #888;
-           margin-top: 4px;
-           margin-left: 4px;
-       }
+.password-container input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    padding-right: 45px;
+    background: white;
+    color: #333;
+}
 
-       /* Сообщение об ошибке/успехе */
-       .password-match {
-           font-size: 12px;
-           margin-top: 4px;
-           margin-left: 4px;
-           display: flex;
-           align-items: center;
-           gap: 4px;
-       }
+.password-container input:focus {
+    outline: none;
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
 
-       .match-success {
-           color: #10b981;
-       }
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
 
-       .match-error {
-           color: #ef4444;
-       }
+.toggle-password:hover {
+    color: #4F46E5;
+}
 
-       .btn {
-           width: 100%;
-           padding: 14px;
-           background: #4F46E5;
-           color: white;
-           border: none;
-           border-radius: 12px;
-           font-size: 16px;
-           font-weight: 600;
-           cursor: pointer;
-           transition: all 0.3s ease;
-           margin-top: 10px;
-           font-family: 'Inter', sans-serif;
-       }
+.input-group input:not(.password-container input) {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    background: white;
+    color: #333;
+}
 
-       .btn:hover {
-           background: #4338CA;
-           transform: translateY(-2px);
-           box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
-       }
+.input-group input:not(.password-container input):focus {
+    outline: none;
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
 
-       .btn:active {
-           transform: translateY(0);
-       }
+.input-group input::placeholder {
+    color: #aaa;
+    font-size: 14px;
+}
 
-       .btn:disabled {
-           background: #a5a5a5;
-           cursor: not-allowed;
-           transform: none;
-           box-shadow: none;
-       }
+.hint {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+    margin-left: 4px;
+    transition: color 0.3s ease;
+}
 
-       .login-link {
-           text-align: center;
-           margin-top: 25px;
-           font-size: 14px;
-           color: #666;
-       }
+.password-match {
+    font-size: 12px;
+    margin-top: 4px;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 
-       .login-link a {
-           color: #4F46E5;
-           text-decoration: none;
-           font-weight: 500;
-           transition: color 0.2s;
-       }
+.match-success {
+    color: #10b981;
+}
 
-       .login-link a:hover {
-           color: #4338CA;
-           text-decoration: underline;
-       }
+.match-error {
+    color: #ef4444;
+}
 
-       /* Адаптивность */
-       @media (max-width: 480px) {
-           .card {
-               padding: 30px 20px;
-           }
-       }
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: #4F46E5;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn:hover {
+    background: #4338CA;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    background: #a5a5a5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.login-link a {
+    color: #4F46E5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.login-link a:hover {
+    color: #4338CA;
+    text-decoration: underline;
+}
+
+/* ========== ТЁМНАЯ ТЕМА ========== */
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+[data-theme="dark"] .card {
+    background: #1e1e2f;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: #2d2d44;
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    background: #3d3d5c;
+}
+
+[data-theme="dark"] h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .subtitle {
+    color: #aaa;
+}
+
+[data-theme="dark"] .input-group label {
+    color: #aaa;
+}
+
+[data-theme="dark"] .password-container input {
+    background: #2d2d44;
+    border-color: #3d3d5c;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .password-container input:focus {
+    border-color: #9b87f5;
+}
+
+[data-theme="dark"] .input-group input:not(.password-container input) {
+    background: #2d2d44;
+    border-color: #3d3d5c;
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .input-group input:not(.password-container input):focus {
+    border-color: #9b87f5;
+}
+
+[data-theme="dark"] .toggle-password {
+    color: #aaa;
+}
+
+[data-theme="dark"] .toggle-password:hover {
+    color: #9b87f5;
+}
+
+[data-theme="dark"] .hint {
+    color: #aaa;
+}
+
+[data-theme="dark"] .btn {
+    background: #5b6eea;
+}
+
+[data-theme="dark"] .btn:hover {
+    background: #4a5dc9;
+}
+
+[data-theme="dark"] .login-link {
+    color: #aaa;
+}
+
+[data-theme="dark"] .login-link a {
+    color: #9b87f5;
+}
+
+[data-theme="dark"] .login-link a:hover {
+    color: #b9a9ff;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .card {
+        padding: 30px 20px;
+    }
+    
+    .theme-toggle {
+        top: 15px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+    }
+}

@@ -15,6 +15,12 @@
 <body>
     <div class="container">
         <div class="card">
+            <!-- Кнопка переключения темы (добавлена) -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
+
             <!-- Логотип -->
             <div class="logo">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +62,37 @@
     </div>
 
     <script>
-        // Функция для показа/скрытия пароля
+        // ---------- Тёмная тема ----------
+        const themeToggle = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                if (themeToggle) themeToggle.classList.add('dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                if (themeToggle) themeToggle.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        }
+        
+        // Загрузка сохранённой темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+
+        // ---------- Функции для формы ----------
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
             const icon = button.querySelector('i');
@@ -72,41 +108,37 @@
             }
         }
 
-        // Получаем элементы
         const form = document.getElementById('loginForm');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Обработка отправки формы
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
 
-            // Простейшая валидация
             if (!login || !password) {
                 alert('❌ Заполните все поля');
                 return;
             }
 
-            // Здесь будет отправка на бэкенд через 3 месяца :)
-            // Сейчас просто имитируем успешный вход
+            // Сохраняем в localStorage данные пользователя
+            const userData = {
+                username: login,
+                email: login.includes('@') ? login : `${login}@focuscorgi.com`,
+                isLoggedIn: true,
+                loginDate: new Date().toISOString()
+            };
+            
+            localStorage.setItem('user', JSON.stringify(userData));
 
-            // Сохраняем в localStorage что пользователь залогинен (для демо)
-            localStorage.setItem('user', JSON.stringify({
-                login: login,
-                isLoggedIn: true
-            }));
-
-            // После успешного входа
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
-            // Перенаправляем на главную
-            window.location.href = "{% url 'index' %}"
+            
+            window.location.href = "{% url 'index' %}";
         });
 
-        // При загрузке страницы фокус на первом поле
         document.getElementById('login').focus();
     </script>
 </body>

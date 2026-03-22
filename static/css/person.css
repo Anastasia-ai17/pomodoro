@@ -581,3 +581,52 @@
             padding: 24px 16px;
         }
     }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .logout-btn {
+        padding: 14px 28px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logout-btn:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Тёмная тема для кнопки выхода */
+    [data-theme="dark"] .logout-btn {
+        background: #dc2626;
+    }
+
+    [data-theme="dark"] .logout-btn:hover {
+        background: #b91c1c;
+    }
+
+    @media (max-width: 768px) {
+        .button-group {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .save-btn, .logout-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }

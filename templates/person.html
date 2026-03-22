@@ -37,12 +37,17 @@
             <div class="profile-form">
                 <div class="form-group">
                     <label>Имя пользователя</label>
-                    <input type="text" id="username" value="CorgiLover" readonly>
+                    <input type="text" id="username" readonly>
                 </div>
 
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="email" value="corgi@focuscorgi.com" readonly>
+                    <input type="email" id="email" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Дата регистрации</label>
+                    <input type="text" id="registrationDate" readonly>
                 </div>
 
                 <div class="form-group">
@@ -60,9 +65,14 @@
                     </div>
                 </div>
 
-                <button class="save-btn" id="saveProfileBtn">
-                    <i class="fa-solid fa-check"></i> Сохранить изменения
-                </button>
+                <div class="button-group">
+                    <button class="save-btn" id="saveProfileBtn">
+                        <i class="fa-solid fa-check"></i> Сохранить изменения
+                    </button>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fa-solid fa-sign-out-alt"></i> Выйти из аккаунта
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -77,19 +87,19 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>
-                <div class="stat-value" id="todayStat">2ч 15м</div>
+                <div class="stat-value" id="todayStat">0ч 0м</div>
                 <div class="stat-label">Сегодня</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-calendar-week"></i></div>
-                <div class="stat-value" id="weekStat">12ч 30м</div>
+                <div class="stat-value" id="weekStat">0ч 0м</div>
                 <div class="stat-label">За неделю</div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-calendar-alt"></i></div>
-                <div class="stat-value" id="monthStat">48ч 45м</div>
+                <div class="stat-value" id="monthStat">0ч 0м</div>
                 <div class="stat-label">За месяц</div>
             </div>
         </div>
@@ -126,24 +136,55 @@
 
 {% block extra_js %}
 <script>
+    // Проверка авторизации при загрузке
+    function checkAuth() {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            window.location.href = "{% url 'auth' %}";
+            return null;
+        }
+        return JSON.parse(user);
+    }
+
+    const currentUser = checkAuth();
+    if (!currentUser) {
+        // Если пользователь не авторизован, редирект уже сработает
+        throw new Error('Не авторизован');
+    }
+
     // ---------- Данные пользователя ----------
-    const userData = {
-        username: 'CorgiLover',
-        email: 'corgi@focuscorgi.com',
-        birthdate: '1990-01-01',
+    let userData = {
+        username: currentUser.username,
+        email: currentUser.email,
+        registrationDate: currentUser.registrationDate || new Date().toISOString(),
+        birthdate: currentUser.birthdate || '1990-01-01',
         password: 'password123',
-        avatar: 'fa-dog'
+        avatar: currentUser.avatar || 'fa-dog'
     };
+
+    // Форматирование даты регистрации
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
 
     // ---------- Элементы ----------
     const avatarIcon = document.getElementById('avatarIcon');
     const avatarOptions = document.querySelectorAll('.avatar-option');
     const usernameInput = document.getElementById('username');
     const emailInput = document.getElementById('email');
+    const registrationDateInput = document.getElementById('registrationDate');
     const birthdateInput = document.getElementById('birthdate');
     const passwordInput = document.getElementById('password');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
     const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
     const passwordModal = document.getElementById('passwordModal');
     const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
     const savePasswordBtn = document.getElementById('savePasswordBtn');
@@ -155,6 +196,7 @@
     function loadUserData() {
         usernameInput.value = userData.username;
         emailInput.value = userData.email;
+        registrationDateInput.value = formatDate(userData.registrationDate);
         birthdateInput.value = userData.birthdate;
         passwordInput.value = userData.password;
 
@@ -186,8 +228,27 @@
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', function() {
             userData.birthdate = birthdateInput.value;
-            alert('✅ Изменения сохранены! (демо-режим)');
+            
+            // Сохраняем в localStorage
+            const updatedUser = {
+                ...currentUser,
+                birthdate: userData.birthdate,
+                avatar: userData.avatar
+            };
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            
+            alert('✅ Изменения сохранены!');
             console.log('Сохранённые данные:', userData);
+        });
+    }
+
+    // ---------- Выход из аккаунта ----------
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if (confirm('Вы уверены, что хотите выйти из аккаунта?')) {
+                localStorage.removeItem('user');
+                window.location.href = "{% url 'index' %}";
+            }
         });
     }
 
@@ -238,7 +299,40 @@
         }
     });
 
+    // ---------- Статистика (демо-данные) ----------
+    // Здесь можно добавить реальную статистику из localStorage
+    function loadStats() {
+        // Получаем сохранённую статистику или создаём новую
+        let stats = localStorage.getItem('userStats');
+        if (!stats) {
+            stats = {
+                today: 0,
+                week: 0,
+                month: 0,
+                lastUpdate: new Date().toISOString()
+            };
+            localStorage.setItem('userStats', JSON.stringify(stats));
+        } else {
+            stats = JSON.parse(stats);
+        }
+        
+        // Форматируем время
+        function formatTime(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            if (hours > 0) {
+                return `${hours}ч ${mins}м`;
+            }
+            return `${mins}м`;
+        }
+        
+        document.getElementById('todayStat').textContent = formatTime(stats.today || 0);
+        document.getElementById('weekStat').textContent = formatTime(stats.week || 0);
+        document.getElementById('monthStat').textContent = formatTime(stats.month || 0);
+    }
+    
     // Загрузка при старте
     loadUserData();
+    loadStats();
 </script>
 {% endblock %}

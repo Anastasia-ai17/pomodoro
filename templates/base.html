@@ -26,9 +26,10 @@
                     <i class="fa-solid fa-house"></i>
                     Главная
                 </a>
-                <a href="{% url 'person' %}" class="nav-link {% if request.resolver_match.url_name == 'person' %}active{% endif %}">
-                    <i class="fa-solid fa-user"></i>
-                    Личный кабинет
+                <!-- Динамическая ссылка -->
+                <a href="#" id="authLink" class="nav-link">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span id="authLinkText">Авторизация</span>
                 </a>
             </nav>
             <!-- Переключатель темы -->
@@ -44,7 +45,7 @@
         {% endblock %}
     </main>
 
-    <!-- Базовый скрипт для темы -->
+    <!-- Базовый скрипт для темы и авторизации -->
     <script>
         // ---------- Тёмная тема ----------
         const themeToggle = document.getElementById('themeToggle');
@@ -75,6 +76,45 @@
         if (themeToggle) {
             themeToggle.addEventListener('click', toggleTheme);
         }
+
+        // ---------- Управление авторизацией ----------
+        const authLink = document.getElementById('authLink');
+        const authLinkText = document.getElementById('authLinkText');
+        const authIcon = authLink ? authLink.querySelector('i') : null;
+
+        function updateAuthUI() {
+            const user = localStorage.getItem('user');
+            const isLoggedIn = user ? JSON.parse(user).isLoggedIn : false;
+
+            if (authLink && authLinkText && authIcon) {
+                if (isLoggedIn) {
+                    authLinkText.textContent = 'Личный кабинет';
+                    authIcon.className = 'fa-solid fa-user';
+                    authLink.href = "{% url 'person' %}";
+                } else {
+                    authLinkText.textContent = 'Авторизация';
+                    authIcon.className = 'fa-solid fa-right-to-bracket';
+                    authLink.href = "{% url 'auth' %}";
+                }
+            }
+        }
+
+        // Функция для выхода (можно добавить в личном кабинете)
+        window.logout = function() {
+            localStorage.removeItem('user');
+            updateAuthUI();
+            window.location.href = "{% url 'index' %}";
+        };
+
+        // Проверяем авторизацию при загрузке страницы
+        updateAuthUI();
+
+        // Слушаем изменения в localStorage (если вкладка обновилась)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'user') {
+                updateAuthUI();
+            }
+        });
     </script>
     
     {% block extra_js %}{% endblock %}
