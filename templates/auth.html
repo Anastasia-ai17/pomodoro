@@ -50,7 +50,7 @@
 
             <!-- Ссылка на регистрацию -->
             <p class="register-link">
-                Ещё нет аккаунта? <a href="regist.html">Создать аккаунт</a>
+                Ещё нет аккаунта? <a href="{% url 'regist' %}">Создать аккаунт</a>
             </p>
         </div>
     </div>
@@ -103,7 +103,7 @@
                 Notification.requestPermission();
             }
             // Перенаправляем на главную
-            window.location.href = '{% url 'index' %}'
+            window.location.href = "{% url 'index' %}"
         });
 
         // При загрузке страницы фокус на первом поле
