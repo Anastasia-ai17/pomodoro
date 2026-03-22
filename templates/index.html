@@ -29,6 +29,11 @@
                     Личный кабинет
                 </a>
             </nav>
+            <!-- Переключатель темы -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
         </div>
     </header>
 
@@ -112,7 +117,7 @@
                 </button>
             </div>
 
-            <!-- Описание метода Помодоро (НОВЫЙ ТЕКСТ) -->
+            <!-- Описание метода Помодоро -->
             <div class="info-section">
                 <h2>🍅 Что такое Pomodoro?</h2>
                 <div class="info-grid">
@@ -143,13 +148,40 @@
     </audio>
 
     <script>
-        // Проверяем статус уведомлений при загрузке (но НЕ запрашиваем)
+        // ---------- Тёмная тема ----------
+        const themeToggle = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.classList.add('dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        }
+        
+        // Загрузка сохранённой темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Проверяем статус уведомлений при загрузке
         if (Notification.permission === 'granted') {
             console.log('Уведомления уже разрешены');
         } else if (Notification.permission === 'denied') {
             console.log('Уведомления заблокированы пользователем');
         }
-        // Если default - ничего не делаем, пользователь решит при входе
 
         // ---------- Элементы ----------
         const timerDisplay = document.getElementById('timer');

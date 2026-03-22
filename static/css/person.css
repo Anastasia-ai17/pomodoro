@@ -1,5 +1,4 @@
-
-    * {
+* {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -10,6 +9,131 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         color: #2d3436;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Тёмная тема */
+    [data-theme="dark"] body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .header {
+        background: #1e1e2f;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    [data-theme="dark"] .logo {
+        color: #9b87f5;
+    }
+
+    [data-theme="dark"] .nav-link {
+        color: #aaa;
+    }
+
+    [data-theme="dark"] .nav-link:hover {
+        background: #2d2d44;
+        color: #fff;
+    }
+
+    [data-theme="dark"] .nav-link.active {
+        color: #9b87f5;
+        background: #2d2d44;
+    }
+
+    [data-theme="dark"] .card {
+        background: #1e1e2f;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    [data-theme="dark"] .card-title {
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .avatar {
+        background: linear-gradient(135deg, #5b6eea, #6a3ba2);
+    }
+
+    [data-theme="dark"] .avatar-option {
+        background: #2d2d44;
+    }
+
+    [data-theme="dark"] .avatar-option:hover {
+        border-color: #9b87f5;
+    }
+
+    [data-theme="dark"] .avatar-option.selected {
+        border-color: #9b87f5;
+        background: #2d2d44;
+    }
+
+    [data-theme="dark"] .form-group input {
+        background: #2d2d44;
+        border-color: #3d3d5c;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .form-group input:focus {
+        border-color: #9b87f5;
+    }
+
+    [data-theme="dark"] .form-group input[readonly] {
+        background: #25253a;
+    }
+
+    [data-theme="dark"] .form-group label {
+        color: #aaa;
+    }
+
+    [data-theme="dark"] .change-password-btn {
+        background: #2d2d44;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .change-password-btn:hover {
+        background: #3d3d5c;
+    }
+
+    [data-theme="dark"] .save-btn {
+        background: #5b6eea;
+    }
+
+    [data-theme="dark"] .save-btn:hover {
+        background: #4a5dc9;
+    }
+
+    [data-theme="dark"] .stat-card {
+        background: #2d2d44;
+        border: 1px solid #3d3d5c;
+    }
+
+    [data-theme="dark"] .stat-value {
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .stat-label {
+        color: #aaa;
+    }
+
+    [data-theme="dark"] .modal-content {
+        background: #1e1e2f;
+    }
+
+    [data-theme="dark"] .modal-title {
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .modal-btn.secondary {
+        background: #2d2d44;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .modal-btn.secondary:hover {
+        background: #3d3d5c;
+    }
+
+    [data-theme="dark"] .modal-btn.primary {
+        background: #5b6eea;
     }
 
     /* Шапка */
@@ -72,6 +196,63 @@
     .nav-link.active {
         color: #4F46E5;
         background: #EEF2FF;
+    }
+
+    /* Кнопка переключения темы */
+    .theme-toggle {
+        background: #f0f0f0;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .theme-toggle i {
+        font-size: 20px;
+        transition: all 0.3s ease;
+        position: absolute;
+    }
+
+    .theme-toggle .fa-moon {
+        opacity: 1;
+        transform: translateY(0);
+        color: #4F46E5;
+    }
+
+    .theme-toggle .fa-sun {
+        opacity: 0;
+        transform: translateY(20px);
+        color: #f39c12;
+    }
+
+    .theme-toggle.dark .fa-moon {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    .theme-toggle.dark .fa-sun {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .theme-toggle:hover {
+        transform: scale(1.05);
+        background: #e0e0e0;
+    }
+
+    [data-theme="dark"] .theme-toggle {
+        background: #2d2d44;
+    }
+
+    [data-theme="dark"] .theme-toggle:hover {
+        background: #3d3d5c;
     }
 
     /* Основной контент */
@@ -387,6 +568,11 @@
 
         .stats-grid {
             grid-template-columns: 1fr;
+        }
+        
+        .header-content {
+            flex-direction: column;
+            gap: 12px;
         }
     }
 

@@ -30,6 +30,11 @@
                     Личный кабинет
                 </a>
             </nav>
+            <!-- Переключатель темы -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
         </div>
     </header>
 
@@ -151,6 +156,34 @@
     </div>
 
     <script>
+        // ---------- Тёмная тема ----------
+        const themeToggle = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.classList.add('dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        }
+        
+        // Загрузка сохранённой темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+
         // ---------- Данные пользователя ----------
         const userData = {
             username: 'CorgiLover',
