@@ -1,304 +1,244 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный кабинет · FocusCorgi</title>
-    <!-- Google Font и иконки -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/person.css' %}" />
-</head>
-<body>
-    <!-- Шапка -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <i class="fa-solid fa-paw"></i>
-                <span>FocusCorgi</span>
+
+{% block title %}Личный кабинет · FocusCorgi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/person.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Блок профиля -->
+    <div class="card">
+        <h2 class="card-title">
+            <i class="fa-solid fa-circle-user"></i>
+            Профиль пользователя
+        </h2>
+
+        <div class="profile-section">
+            <!-- Аватарка и выбор -->
+            <div class="avatar-section">
+                <div class="avatar" id="avatar">
+                    <i class="fa-solid fa-dog" id="avatarIcon"></i>
+                </div>
+
+                <div class="avatar-selector" id="avatarSelector">
+                    <div class="avatar-option selected" data-icon="fa-dog">🐶</div>
+                    <div class="avatar-option" data-icon="fa-cat">🐱</div>
+                    <div class="avatar-option" data-icon="fa-fish">🐟</div>
+                    <div class="avatar-option" data-icon="fa-dove">🐦</div>
+                    <div class="avatar-option" data-icon="fa-otter">🦦</div>
+                    <div class="avatar-option" data-icon="fa-frog">🐸</div>
+                </div>
             </div>
-            <nav class="nav">
-                <a href="{% url 'index' %}" class="nav-link">
-                    <i class="fa-solid fa-house"></i>
-                    Главная
-                </a>
-                <a href="{% url 'person' %}" class="nav-link active">
-                    <i class="fa-solid fa-user"></i>
-                    Личный кабинет
-                </a>
-            </nav>
-            <!-- Переключатель темы -->
-            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
-                <i class="fa-solid fa-moon"></i>
-                <i class="fa-solid fa-sun"></i>
-            </button>
-        </div>
-    </header>
 
-    <main class="main">
-        <div class="container">
-            <!-- Блок профиля -->
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fa-solid fa-circle-user"></i>
-                    Профиль пользователя
-                </h2>
+            <!-- Форма с данными -->
+            <div class="profile-form">
+                <div class="form-group">
+                    <label>Имя пользователя</label>
+                    <input type="text" id="username" value="CorgiLover" readonly>
+                </div>
 
-                <div class="profile-section">
-                    <!-- Аватарка и выбор -->
-                    <div class="avatar-section">
-                        <div class="avatar" id="avatar">
-                            <i class="fa-solid fa-dog" id="avatarIcon"></i>
-                        </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" value="corgi@focuscorgi.com" readonly>
+                </div>
 
-                        <div class="avatar-selector" id="avatarSelector">
-                            <div class="avatar-option selected" data-icon="fa-dog">🐶</div>
-                            <div class="avatar-option" data-icon="fa-cat">🐱</div>
-                            <div class="avatar-option" data-icon="fa-fish">🐟</div>
-                            <div class="avatar-option" data-icon="fa-dove">🐦</div>
-                            <div class="avatar-option" data-icon="fa-otter">🦦</div>
-                            <div class="avatar-option" data-icon="fa-frog">🐸</div>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label>Дата рождения</label>
+                    <input type="date" id="birthdate" value="1990-01-01">
+                </div>
 
-                    <!-- Форма с данными -->
-                    <div class="profile-form">
-                        <div class="form-group">
-                            <label>Имя пользователя</label>
-                            <input type="text" id="username" value="CorgiLover" readonly>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="email" value="corgi@focuscorgi.com" readonly>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Дата рождения</label>
-                            <input type="date" id="birthdate" value="1990-01-01">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Пароль</label>
-                            <div class="password-group">
-                                <input type="password" id="password" value="password123" readonly>
-                                <button class="change-password-btn" id="changePasswordBtn">
-                                    <i class="fa-solid fa-key"></i> Сменить
-                                </button>
-                            </div>
-                        </div>
-
-                        <button class="save-btn" id="saveProfileBtn">
-                            <i class="fa-solid fa-check"></i> Сохранить изменения
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <div class="password-group">
+                        <input type="password" id="password" value="password123" readonly>
+                        <button class="change-password-btn" id="changePasswordBtn">
+                            <i class="fa-solid fa-key"></i> Сменить
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Статистика (только день/неделя/месяц) -->
-            <div class="card">
-                <h2 class="card-title">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    Статистика
-                </h2>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>
-                        <div class="stat-value" id="todayStat">2ч 15м</div>
-                        <div class="stat-label">Сегодня</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fa-solid fa-calendar-week"></i></div>
-                        <div class="stat-value" id="weekStat">12ч 30м</div>
-                        <div class="stat-label">За неделю</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fa-solid fa-calendar-alt"></i></div>
-                        <div class="stat-value" id="monthStat">48ч 45м</div>
-                        <div class="stat-label">За месяц</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Модальное окно для смены пароля -->
-    <div class="modal" id="passwordModal">
-        <div class="modal-content">
-            <h3 class="modal-title">Смена пароля</h3>
-
-            <div class="form-group">
-                <label>Текущий пароль</label>
-                <input type="password" id="currentPassword" placeholder="••••••••">
-            </div>
-
-            <div class="form-group">
-                <label>Новый пароль</label>
-                <input type="password" id="newPassword" placeholder="••••••••" minlength="6">
-            </div>
-
-            <div class="form-group">
-                <label>Подтвердите новый пароль</label>
-                <input type="password" id="confirmNewPassword" placeholder="••••••••" minlength="6">
-            </div>
-
-            <div class="modal-actions">
-                <button class="modal-btn secondary" id="cancelPasswordBtn">Отмена</button>
-                <button class="modal-btn primary" id="savePasswordBtn">Сохранить</button>
+                <button class="save-btn" id="saveProfileBtn">
+                    <i class="fa-solid fa-check"></i> Сохранить изменения
+                </button>
             </div>
         </div>
     </div>
 
-    <script>
-        // ---------- Тёмная тема ----------
-        const themeToggle = document.getElementById('themeToggle');
-        
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.classList.add('dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                themeToggle.classList.remove('dark');
+    <!-- Статистика -->
+    <div class="card">
+        <h2 class="card-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            Статистика
+        </h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>
+                <div class="stat-value" id="todayStat">2ч 15м</div>
+                <div class="stat-label">Сегодня</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                <div class="stat-value" id="weekStat">12ч 30м</div>
+                <div class="stat-label">За неделю</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-alt"></i></div>
+                <div class="stat-value" id="monthStat">48ч 45м</div>
+                <div class="stat-label">За месяц</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для смены пароля -->
+<div class="modal" id="passwordModal">
+    <div class="modal-content">
+        <h3 class="modal-title">Смена пароля</h3>
+
+        <div class="form-group">
+            <label>Текущий пароль</label>
+            <input type="password" id="currentPassword" placeholder="••••••••">
+        </div>
+
+        <div class="form-group">
+            <label>Новый пароль</label>
+            <input type="password" id="newPassword" placeholder="••••••••" minlength="6">
+        </div>
+
+        <div class="form-group">
+            <label>Подтвердите новый пароль</label>
+            <input type="password" id="confirmNewPassword" placeholder="••••••••" minlength="6">
+        </div>
+
+        <div class="modal-actions">
+            <button class="modal-btn secondary" id="cancelPasswordBtn">Отмена</button>
+            <button class="modal-btn primary" id="savePasswordBtn">Сохранить</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ---------- Данные пользователя ----------
+    const userData = {
+        username: 'CorgiLover',
+        email: 'corgi@focuscorgi.com',
+        birthdate: '1990-01-01',
+        password: 'password123',
+        avatar: 'fa-dog'
+    };
+
+    // ---------- Элементы ----------
+    const avatarIcon = document.getElementById('avatarIcon');
+    const avatarOptions = document.querySelectorAll('.avatar-option');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email');
+    const birthdateInput = document.getElementById('birthdate');
+    const passwordInput = document.getElementById('password');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const passwordModal = document.getElementById('passwordModal');
+    const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+    const savePasswordBtn = document.getElementById('savePasswordBtn');
+    const currentPassword = document.getElementById('currentPassword');
+    const newPassword = document.getElementById('newPassword');
+    const confirmNewPassword = document.getElementById('confirmNewPassword');
+
+    // ---------- Загрузка данных пользователя ----------
+    function loadUserData() {
+        usernameInput.value = userData.username;
+        emailInput.value = userData.email;
+        birthdateInput.value = userData.birthdate;
+        passwordInput.value = userData.password;
+
+        // Устанавливаем аватар
+        avatarIcon.className = `fa-solid ${userData.avatar}`;
+
+        // Подсвечиваем выбранный аватар
+        avatarOptions.forEach(opt => {
+            opt.classList.remove('selected');
+            if (opt.dataset.icon === userData.avatar) {
+                opt.classList.add('selected');
             }
-        }
-        
-        function toggleTheme() {
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            setTheme(currentTheme === 'light' ? 'dark' : 'light');
-        }
-        
-        // Загрузка сохранённой темы
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            setTheme('dark');
-        }
-        
-        themeToggle.addEventListener('click', toggleTheme);
-
-        // ---------- Данные пользователя ----------
-        const userData = {
-            username: 'CorgiLover',
-            email: 'corgi@focuscorgi.com',
-            birthdate: '1990-01-01',
-            password: 'password123',
-            avatar: 'fa-dog'
-        };
-
-        // ---------- Элементы ----------
-        const avatarIcon = document.getElementById('avatarIcon');
-        const avatarOptions = document.querySelectorAll('.avatar-option');
-        const usernameInput = document.getElementById('username');
-        const emailInput = document.getElementById('email');
-        const birthdateInput = document.getElementById('birthdate');
-        const passwordInput = document.getElementById('password');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const changePasswordBtn = document.getElementById('changePasswordBtn');
-        const passwordModal = document.getElementById('passwordModal');
-        const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
-        const savePasswordBtn = document.getElementById('savePasswordBtn');
-        const currentPassword = document.getElementById('currentPassword');
-        const newPassword = document.getElementById('newPassword');
-        const confirmNewPassword = document.getElementById('confirmNewPassword');
-
-        // ---------- Загрузка данных пользователя ----------
-        function loadUserData() {
-            usernameInput.value = userData.username;
-            emailInput.value = userData.email;
-            birthdateInput.value = userData.birthdate;
-            passwordInput.value = userData.password;
-
-            // Устанавливаем аватар
-            avatarIcon.className = `fa-solid ${userData.avatar}`;
-
-            // Подсвечиваем выбранный аватар
-            avatarOptions.forEach(opt => {
-                opt.classList.remove('selected');
-                if (opt.dataset.icon === userData.avatar) {
-                    opt.classList.add('selected');
-                }
-            });
-        }
-
-        // ---------- Выбор аватара ----------
-        avatarOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                avatarOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-
-                const icon = this.dataset.icon;
-                avatarIcon.className = `fa-solid ${icon}`;
-                userData.avatar = icon;
-            });
         });
+    }
 
-        // ---------- Сохранение профиля ----------
+    // ---------- Выбор аватара ----------
+    avatarOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            avatarOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+
+            const icon = this.dataset.icon;
+            avatarIcon.className = `fa-solid ${icon}`;
+            userData.avatar = icon;
+        });
+    });
+
+    // ---------- Сохранение профиля ----------
+    if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', function() {
-            // Обновляем данные (кроме имени и email — они readonly)
             userData.birthdate = birthdateInput.value;
-
             alert('✅ Изменения сохранены! (демо-режим)');
             console.log('Сохранённые данные:', userData);
         });
+    }
 
-        // ---------- Смена пароля ----------
+    // ---------- Смена пароля ----------
+    if (changePasswordBtn) {
         changePasswordBtn.addEventListener('click', function() {
             passwordModal.classList.add('active');
-
-            // Очищаем поля
             currentPassword.value = '';
             newPassword.value = '';
             confirmNewPassword.value = '';
         });
+    }
 
+    if (cancelPasswordBtn) {
         cancelPasswordBtn.addEventListener('click', function() {
             passwordModal.classList.remove('active');
         });
+    }
 
+    if (savePasswordBtn) {
         savePasswordBtn.addEventListener('click', function() {
-            // Проверка текущего пароля
             if (currentPassword.value !== userData.password) {
                 alert('❌ Неверный текущий пароль');
                 return;
             }
 
-            // Проверка нового пароля
             if (newPassword.value.length < 6) {
                 alert('❌ Новый пароль должен быть минимум 6 символов');
                 return;
             }
 
-            // Проверка совпадения
             if (newPassword.value !== confirmNewPassword.value) {
                 alert('❌ Новые пароли не совпадают');
                 return;
             }
 
-            // Сохраняем новый пароль
             userData.password = newPassword.value;
             passwordInput.value = userData.password;
-
             alert('✅ Пароль успешно изменён!');
             passwordModal.classList.remove('active');
         });
+    }
 
-        // Закрытие модалки по клику вне её
-        window.addEventListener('click', function(e) {
-            if (e.target === passwordModal) {
-                passwordModal.classList.remove('active');
-            }
-        });
+    // Закрытие модалки по клику вне её
+    window.addEventListener('click', function(e) {
+        if (e.target === passwordModal) {
+            passwordModal.classList.remove('active');
+        }
+    });
 
-        // ---------- Загрузка при старте ----------
-        loadUserData();
-    </script>
-</body>
-</html>
+    // Загрузка при старте
+    loadUserData();
+</script>
+{% endblock %}

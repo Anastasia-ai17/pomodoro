@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FocusCorgi{% endblock %}</title>
+    <!-- Google Font и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fa-solid fa-paw"></i>
+                <span>FocusCorgi</span>
+            </div>
+            <nav class="nav">
+                <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                    <i class="fa-solid fa-house"></i>
+                    Главная
+                </a>
+                <a href="{% url 'person' %}" class="nav-link {% if request.resolver_match.url_name == 'person' %}active{% endif %}">
+                    <i class="fa-solid fa-user"></i>
+                    Личный кабинет
+                </a>
+            </nav>
+            <!-- Переключатель темы -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Базовый скрипт для темы -->
+    <script>
+        // ---------- Тёмная тема ----------
+        const themeToggle = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                if (themeToggle) themeToggle.classList.add('dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                if (themeToggle) themeToggle.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        }
+        
+        // Загрузка сохранённой темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
