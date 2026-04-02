@@ -158,38 +158,94 @@
         password.addEventListener('input', checkPasswordMatch);
         confirmPassword.addEventListener('input', checkPasswordMatch);
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // ---------- Функции для работы с API ----------
+        function setTokens(access, refresh) {
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+        }
 
+        // ---------- ОБНОВЛЕННЫЙ ОБРАБОТЧИК ФОРМЫ РЕГИСТРАЦИИ ----------
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Валидация паролей
             if (password.value !== confirmPassword.value) {
                 alert('❌ Пароли не совпадают!');
                 return;
             }
-
+            
             if (password.value.length < 6) {
                 alert('❌ Пароль должен быть минимум 6 символов');
                 return;
             }
-
+            
             if (!usernameInput.value || !emailInput.value) {
                 alert('❌ Заполните все поля');
                 return;
             }
-
-            const userData = {
-                username: usernameInput.value,
-                email: emailInput.value,
-                isLoggedIn: true,
-                registrationDate: new Date().toISOString()
-            };
             
-            localStorage.setItem('user', JSON.stringify(userData));
-
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
+            // Блокируем кнопку, чтобы не было повторных отправок
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Регистрация...';
+            
+            try {
+                const response = await fetch('/api/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: usernameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        password: password.value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Сохраняем токены
+                    if (data.access && data.refresh) {
+                        setTokens(data.access, data.refresh);
+                    }
+                    
+                    // Сохраняем информацию о пользователе
+                    const userData = {
+                        id: data.user?.id || data.id,
+                        username: data.user?.username || usernameInput.value,
+                        email: data.user?.email || emailInput.value,
+                        isLoggedIn: true,
+                        registrationDate: new Date().toISOString()
+                    };
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    
+                    // Запрашиваем разрешение на уведомления
+                    if (Notification.permission === 'default') {
+                        Notification.requestPermission();
+                    }
+                    
+                    alert('✅ Регистрация прошла успешно!');
+                    window.location.href = "{% url 'index' %}";
+                } else {
+                    // Обработка ошибок от сервера
+                    let errorMessage = 'Ошибка регистрации';
+                    if (data.error) {
+                        errorMessage = data.error;
+                    } else if (data.username) {
+                        errorMessage = 'Имя пользователя: ' + data.username.join(', ');
+                    } else if (data.email) {
+                        errorMessage = 'Email: ' + data.email.join(', ');
+                    }
+                    alert('❌ ' + errorMessage);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Зарегистрироваться';
+                }
+            } catch (error) {
+                console.error('Ошибка при регистрации:', error);
+                alert('❌ Ошибка соединения с сервером. Проверьте, запущен ли сервер.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Зарегистрироваться';
             }
-            
-            window.location.href = "{% url 'index' %}";
         });
 
         checkPasswordMatch();

@@ -3,17 +3,17 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    coins = models.IntegerField(default=0)
     
     THEME_CHOICES = [
         ('light', 'Light'),
         ('dark', 'Dark'),
-        ('system', 'System'),
     ]
     theme = models.CharField(
         max_length=10,
         choices=THEME_CHOICES,
-        default='system',
-        help_text="Тема оформления: светлая, тёмная или системная"
+        default='light',
+        help_text="Тема оформления: светлая, тёмная"
     )
     
     def __str__(self):

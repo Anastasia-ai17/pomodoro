@@ -116,6 +116,203 @@
             }
         });
     </script>
+        
+    <script>
+        // ---------- Работа с токенами ----------
+        function setTokens(access, refresh) {
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+        }
+        
+        function getAccessToken() {
+            return localStorage.getItem('access_token');
+        }
+        
+        function getRefreshToken() {
+            return localStorage.getItem('refresh_token');
+        }
+        
+        function clearTokens() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+        }
+        
+        async function refreshToken() {
+            const refresh = getRefreshToken();
+            if (!refresh) return null;
+            
+            try {
+                const response = await fetch('/api/token/refresh/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ refresh: refresh })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('access_token', data.access);
+                    return data.access;
+                }
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        // Функция для API запросов с автоматическим обновлением токена
+        async function apiRequest(url, options = {}) {
+            let accessToken = getAccessToken();
+            
+            // Добавляем токен к запросу
+            const headers = {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            };
+            
+            if (accessToken) {
+                headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+            
+            let response = await fetch(url, {
+                ...options,
+                headers: headers
+            });
+            
+            // Если токен просрочен (401), пробуем обновить
+            if (response.status === 401) {
+                const newAccessToken = await refreshToken();
+                if (newAccessToken) {
+                    headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    response = await fetch(url, {
+                        ...options,
+                        headers: headers
+                    });
+                } else {
+                    // Если обновить не удалось - перенаправляем на вход
+                    clearTokens();
+                    window.location.href = "{% url 'auth' %}";
+                    return null;
+                }
+            }
+            
+            return response;
+        }
+        
+        // Проверка авторизации через API
+        async function checkAuth() {
+            const accessToken = getAccessToken();
+            if (!accessToken) return null;
+            
+            try {
+                const response = await apiRequest('/api/protected/');
+                if (response && response.ok) {
+                    const data = await response.json();
+                    return data.user;
+                }
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        // Обновление UI в зависимости от авторизации
+        async function updateAuthUI() {
+            const user = await checkAuth();
+            const authLink = document.getElementById('authLink');
+            const authLinkText = document.getElementById('authLinkText');
+            const authIcon = authLink ? authLink.querySelector('i') : null;
+            
+            if (authLink && authLinkText && authIcon) {
+                if (user) {
+                    authLinkText.textContent = user.username || 'Личный кабинет';
+                    authIcon.className = 'fa-solid fa-user';
+                    authLink.href = "{% url 'person' %}";
+                } else {
+                    authLinkText.textContent = 'Авторизация';
+                    authIcon.className = 'fa-solid fa-right-to-bracket';
+                    authLink.href = "{% url 'auth' %}";
+                }
+            }
+        }
+        
+        // Загружаем тему из API (если пользователь авторизован)
+        async function loadUserTheme() {
+            const user = await checkAuth();
+            if (!user) {
+                // Загружаем тему гостя
+                try {
+                    const response = await fetch('/api/theme/guest/');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.theme === 'dark') {
+                            document.documentElement.setAttribute('data-theme', 'dark');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading guest theme:', error);
+                }
+                return;
+            }
+            
+            // Загружаем тему пользователя
+            try {
+                const response = await apiRequest('/api/theme/');
+                if (response && response.ok) {
+                    const data = await response.json();
+                    if (data.theme === 'dark') {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user theme:', error);
+            }
+        }
+        
+        // Сохранение темы
+        async function saveTheme(theme) {
+            const user = await checkAuth();
+            const isDark = theme === 'dark';
+            
+            if (user) {
+                // Сохраняем тему пользователя
+                await apiRequest('/api/theme/', {
+                    method: 'POST',
+                    body: JSON.stringify({ theme: isDark ? 'dark' : 'light' })
+                });
+            } else {
+                // Сохраняем тему гостя
+                await fetch('/api/theme/guest/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ theme: isDark ? 'dark' : 'light' })
+                });
+            }
+        }
+        
+        // Переопределяем функцию переключения темы
+        const originalToggleTheme = toggleTheme;
+        window.toggleTheme = async function() {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+            await saveTheme(newTheme);
+        };
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', async () => {
+            await updateAuthUI();
+            await loadUserTheme();
+        });
+        
+        // Экспортируем функции для использования в других файлах
+        window.apiRequest = apiRequest;
+        window.checkAuth = checkAuth;
+        window.clearTokens = clearTokens;
+        window.getAccessToken = getAccessToken;
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>
