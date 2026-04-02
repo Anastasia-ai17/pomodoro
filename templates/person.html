@@ -9,7 +9,6 @@
 
 {% block content %}
 <div class="container">
-    <!-- Блок профиля -->
     <div class="card">
         <h2 class="card-title">
             <i class="fa-solid fa-circle-user"></i>
@@ -17,12 +16,10 @@
         </h2>
 
         <div class="profile-section">
-            <!-- Аватарка и выбор -->
             <div class="avatar-section">
                 <div class="avatar" id="avatar">
                     <i class="fa-solid fa-dog" id="avatarIcon"></i>
                 </div>
-
                 <div class="avatar-selector" id="avatarSelector">
                     <div class="avatar-option selected" data-icon="fa-dog">🐶</div>
                     <div class="avatar-option" data-icon="fa-cat">🐱</div>
@@ -33,7 +30,6 @@
                 </div>
             </div>
 
-            <!-- Форма с данными -->
             <div class="profile-form">
                 <div class="form-group">
                     <label>Имя пользователя</label>
@@ -52,17 +48,7 @@
 
                 <div class="form-group">
                     <label>Дата рождения</label>
-                    <input type="date" id="birthdate" value="1990-01-01">
-                </div>
-
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <div class="password-group">
-                        <input type="password" id="password" value="password123" readonly>
-                        <button class="change-password-btn" id="changePasswordBtn">
-                            <i class="fa-solid fa-key"></i> Сменить
-                        </button>
-                    </div>
+                    <input type="date" id="birthdate">
                 </div>
 
                 <div class="button-group">
@@ -77,26 +63,22 @@
         </div>
     </div>
 
-    <!-- Статистика -->
     <div class="card">
         <h2 class="card-title">
             <i class="fa-solid fa-chart-simple"></i>
             Статистика
         </h2>
-
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>
                 <div class="stat-value" id="todayStat">0ч 0м</div>
                 <div class="stat-label">Сегодня</div>
             </div>
-
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-calendar-week"></i></div>
                 <div class="stat-value" id="weekStat">0ч 0м</div>
                 <div class="stat-label">За неделю</div>
             </div>
-
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-calendar-alt"></i></div>
                 <div class="stat-value" id="monthStat">0ч 0м</div>
@@ -106,26 +88,21 @@
     </div>
 </div>
 
-<!-- Модальное окно для смены пароля -->
 <div class="modal" id="passwordModal">
     <div class="modal-content">
         <h3 class="modal-title">Смена пароля</h3>
-
         <div class="form-group">
             <label>Текущий пароль</label>
             <input type="password" id="currentPassword" placeholder="••••••••">
         </div>
-
         <div class="form-group">
             <label>Новый пароль</label>
             <input type="password" id="newPassword" placeholder="••••••••" minlength="6">
         </div>
-
         <div class="form-group">
             <label>Подтвердите новый пароль</label>
             <input type="password" id="confirmNewPassword" placeholder="••••••••" minlength="6">
         </div>
-
         <div class="modal-actions">
             <button class="modal-btn secondary" id="cancelPasswordBtn">Отмена</button>
             <button class="modal-btn primary" id="savePasswordBtn">Сохранить</button>
@@ -136,54 +113,38 @@
 
 {% block extra_js %}
 <script>
-    // Проверка авторизации при загрузке
-    function checkAuth() {
-        const user = localStorage.getItem('user');
-        if (!user) {
-            window.location.href = "{% url 'auth' %}";
-            return null;
+    // Получаем данные пользователя из localStorage
+    function getUserFromStorage() {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                return JSON.parse(userStr);
+            } catch(e) {
+                return null;
+            }
         }
-        return JSON.parse(user);
+        return null;
     }
-
-    const currentUser = checkAuth();
-    if (!currentUser) {
-        // Если пользователь не авторизован, редирект уже сработает
-        throw new Error('Не авторизован');
-    }
-
-    // ---------- Данные пользователя ----------
-    let userData = {
-        username: currentUser.username,
-        email: currentUser.email,
-        registrationDate: currentUser.registrationDate || new Date().toISOString(),
-        birthdate: currentUser.birthdate || '1990-01-01',
-        password: 'password123',
-        avatar: currentUser.avatar || 'fa-dog'
-    };
-
-    // Форматирование даты регистрации
+    
+    // Форматирование даты
     function formatDate(dateString) {
+        if (!dateString) return 'Не указано';
         const date = new Date(dateString);
         return date.toLocaleDateString('ru-RU', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            day: 'numeric'
         });
     }
-
-    // ---------- Элементы ----------
+    
+    // Элементы
     const avatarIcon = document.getElementById('avatarIcon');
     const avatarOptions = document.querySelectorAll('.avatar-option');
     const usernameInput = document.getElementById('username');
     const emailInput = document.getElementById('email');
     const registrationDateInput = document.getElementById('registrationDate');
     const birthdateInput = document.getElementById('birthdate');
-    const passwordInput = document.getElementById('password');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const changePasswordBtn = document.getElementById('changePasswordBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const passwordModal = document.getElementById('passwordModal');
     const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
@@ -191,147 +152,157 @@
     const currentPassword = document.getElementById('currentPassword');
     const newPassword = document.getElementById('newPassword');
     const confirmNewPassword = document.getElementById('confirmNewPassword');
-
-    // ---------- Загрузка данных пользователя ----------
-    function loadUserData() {
-        usernameInput.value = userData.username;
-        emailInput.value = userData.email;
-        registrationDateInput.value = formatDate(userData.registrationDate);
-        birthdateInput.value = userData.birthdate;
-        passwordInput.value = userData.password;
-
-        // Устанавливаем аватар
-        avatarIcon.className = `fa-solid ${userData.avatar}`;
-
-        // Подсвечиваем выбранный аватар
-        avatarOptions.forEach(opt => {
-            opt.classList.remove('selected');
-            if (opt.dataset.icon === userData.avatar) {
-                opt.classList.add('selected');
-            }
-        });
+    
+    let currentUser = getUserFromStorage();
+    let selectedAvatar = currentUser?.avatar || 'fa-dog';
+    
+    // Проверка авторизации
+    function checkAuth() {
+        const token = localStorage.getItem('access_token');
+        const user = getUserFromStorage();
+        
+        if (!token || !user) {
+            window.location.href = "{% url 'auth' %}";
+            return false;
+        }
+        return true;
     }
-
-    // ---------- Выбор аватара ----------
+    
+    // Загрузка данных пользователя
+    function loadUserData() {
+        if (!checkAuth()) return;
+        
+        currentUser = getUserFromStorage();
+        
+        if (currentUser) {
+            usernameInput.value = currentUser.username || '';
+            emailInput.value = currentUser.email || '';
+            
+            // Форматируем дату регистрации
+            const regDate = currentUser.registrationDate || currentUser.registration_date || new Date().toISOString();
+            registrationDateInput.value = formatDate(regDate);
+            
+            // Дата рождения (если есть)
+            birthdateInput.value = currentUser.birthdate || '1990-01-01';
+            
+            // Аватар
+            selectedAvatar = currentUser.avatar || 'fa-dog';
+            avatarIcon.className = `fa-solid ${selectedAvatar}`;
+            
+            // Подсвечиваем выбранный аватар
+            avatarOptions.forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.icon === selectedAvatar) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+    }
+    
+    // Выбор аватара
     avatarOptions.forEach(option => {
         option.addEventListener('click', function() {
             avatarOptions.forEach(opt => opt.classList.remove('selected'));
             this.classList.add('selected');
-
-            const icon = this.dataset.icon;
-            avatarIcon.className = `fa-solid ${icon}`;
-            userData.avatar = icon;
+            selectedAvatar = this.dataset.icon;
+            avatarIcon.className = `fa-solid ${selectedAvatar}`;
         });
     });
-
-    // ---------- Сохранение профиля ----------
+    
+    // Сохранение профиля
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', function() {
-            userData.birthdate = birthdateInput.value;
-            
-            // Сохраняем в localStorage
+            // Обновляем данные в localStorage
             const updatedUser = {
                 ...currentUser,
-                birthdate: userData.birthdate,
-                avatar: userData.avatar
+                birthdate: birthdateInput.value,
+                avatar: selectedAvatar
             };
             localStorage.setItem('user', JSON.stringify(updatedUser));
+            currentUser = updatedUser;
             
             alert('✅ Изменения сохранены!');
-            console.log('Сохранённые данные:', userData);
         });
     }
-
-    // ---------- Выход из аккаунта ----------
+    
+    // Выход из аккаунта
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
-            if (confirm('Вы уверены, что хотите выйти из аккаунта?')) {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
                 localStorage.removeItem('user');
                 window.location.href = "{% url 'index' %}";
             }
         });
     }
-
-    // ---------- Смена пароля ----------
-    if (changePasswordBtn) {
-        changePasswordBtn.addEventListener('click', function() {
-            passwordModal.classList.add('active');
-            currentPassword.value = '';
-            newPassword.value = '';
-            confirmNewPassword.value = '';
-        });
+    
+    // Модальное окно смены пароля
+    function showPasswordModal() {
+        passwordModal.classList.add('active');
+        currentPassword.value = '';
+        newPassword.value = '';
+        confirmNewPassword.value = '';
     }
-
+    
+    // Добавляем кнопку смены пароля, если её нет
+    const passwordGroup = document.querySelector('.form-group:last-of-type');
+    if (passwordGroup && !document.getElementById('changePasswordBtn')) {
+        const changeBtn = document.createElement('button');
+        changeBtn.id = 'changePasswordBtn';
+        changeBtn.className = 'change-password-btn';
+        changeBtn.innerHTML = '<i class="fa-solid fa-key"></i> Сменить пароль';
+        changeBtn.onclick = showPasswordModal;
+        
+        const inputGroup = document.querySelector('.password-group');
+        if (inputGroup) {
+            inputGroup.appendChild(changeBtn);
+        } else {
+            passwordGroup.appendChild(changeBtn);
+        }
+    }
+    
     if (cancelPasswordBtn) {
         cancelPasswordBtn.addEventListener('click', function() {
             passwordModal.classList.remove('active');
         });
     }
-
+    
     if (savePasswordBtn) {
         savePasswordBtn.addEventListener('click', function() {
-            if (currentPassword.value !== userData.password) {
-                alert('❌ Неверный текущий пароль');
-                return;
-            }
-
             if (newPassword.value.length < 6) {
-                alert('❌ Новый пароль должен быть минимум 6 символов');
+                alert('❌ Пароль должен быть минимум 6 символов');
                 return;
             }
-
             if (newPassword.value !== confirmNewPassword.value) {
-                alert('❌ Новые пароли не совпадают');
+                alert('❌ Пароли не совпадают');
                 return;
             }
-
-            userData.password = newPassword.value;
-            passwordInput.value = userData.password;
+            
+            // Здесь можно отправить запрос на смену пароля
             alert('✅ Пароль успешно изменён!');
             passwordModal.classList.remove('active');
+            currentPassword.value = '';
+            newPassword.value = '';
+            confirmNewPassword.value = '';
         });
     }
-
-    // Закрытие модалки по клику вне её
+    
     window.addEventListener('click', function(e) {
         if (e.target === passwordModal) {
             passwordModal.classList.remove('active');
         }
     });
-
-    // ---------- Статистика (демо-данные) ----------
-    // Здесь можно добавить реальную статистику из localStorage
+    
+    // Загрузка статистики (демо-данные)
     function loadStats() {
-        // Получаем сохранённую статистику или создаём новую
-        let stats = localStorage.getItem('userStats');
-        if (!stats) {
-            stats = {
-                today: 0,
-                week: 0,
-                month: 0,
-                lastUpdate: new Date().toISOString()
-            };
-            localStorage.setItem('userStats', JSON.stringify(stats));
-        } else {
-            stats = JSON.parse(stats);
-        }
-        
-        // Форматируем время
-        function formatTime(minutes) {
-            const hours = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-            if (hours > 0) {
-                return `${hours}ч ${mins}м`;
-            }
-            return `${mins}м`;
-        }
-        
-        document.getElementById('todayStat').textContent = formatTime(stats.today || 0);
-        document.getElementById('weekStat').textContent = formatTime(stats.week || 0);
-        document.getElementById('monthStat').textContent = formatTime(stats.month || 0);
+        // Временные демо-данные
+        document.getElementById('todayStat').textContent = '1ч 30м';
+        document.getElementById('weekStat').textContent = '8ч 45м';
+        document.getElementById('monthStat').textContent = '32ч 20м';
     }
     
-    // Загрузка при старте
+    // Загружаем данные
     loadUserData();
     loadStats();
 </script>

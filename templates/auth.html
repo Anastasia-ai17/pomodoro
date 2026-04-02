@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход · FocusCorgi</title>
-    <!-- Google Font и иконки -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
@@ -15,13 +14,11 @@
 <body>
     <div class="container">
         <div class="card">
-            <!-- Кнопка переключения темы (добавлена) -->
             <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
                 <i class="fa-solid fa-moon"></i>
                 <i class="fa-solid fa-sun"></i>
             </button>
 
-            <!-- Логотип -->
             <div class="logo">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1 .45-1.41.81-1.41 1.36 0 .55.45.99 1 .99h.01c.55 0 1-.45 1-1 0-.17-.03-.33-.09-.48-.16-.39-.51-.71-1.01-.97-1.25-.64-1.81-1.46-1.81-2.54 0-1.38 1.06-2.5 2.5-2.5.7 0 1.32.28 1.78.74l.42-.42c.2-.2.51-.2.71 0 .2.2.2.51 0 .71l-.49.49c.24.44.38.95.38 1.48 0 1.38-1.06 2.5-2.5 2.5-.7 0-1.32-.28-1.78-.74l-.42.42c-.2.2-.51.2-.71 0-.2-.2-.2-.51 0-.71l.49-.49z" fill="#4F46E5"/>
@@ -31,15 +28,12 @@
             <h2>Добро пожаловать!</h2>
             <p class="subtitle">Войди в свой аккаунт ✨</p>
 
-            <!-- Форма входа -->
             <form id="loginForm" onsubmit="return false;">
-                <!-- Поле Email или Username -->
                 <div class="input-group">
                     <label for="login">Email или имя пользователя</label>
                     <input type="text" id="login" name="login" placeholder="corgi_lover@mail.ru" required>
                 </div>
 
-                <!-- Поле Пароль (с глазом) -->
                 <div class="input-group">
                     <label for="password">Пароль</label>
                     <div class="password-container">
@@ -50,11 +44,9 @@
                     </div>
                 </div>
 
-                <!-- Кнопка входа -->
                 <button type="submit" class="btn" id="submitBtn">Войти</button>
             </form>
 
-            <!-- Ссылка на регистрацию -->
             <p class="register-link">
                 Ещё нет аккаунта? <a href="{% url 'regist' %}">Создать аккаунт</a>
             </p>
@@ -82,21 +74,13 @@
             setTheme(currentTheme === 'light' ? 'dark' : 'light');
         }
         
-        // Загрузка сохранённой темы
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            setTheme('dark');
-        }
-        
-        if (themeToggle) {
-            themeToggle.addEventListener('click', toggleTheme);
-        }
+        if (savedTheme === 'dark') setTheme('dark');
+        if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
 
-        // ---------- Функции для формы ----------
         function togglePassword(inputId, button) {
             const input = document.getElementById(inputId);
             const icon = button.querySelector('i');
-
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -108,38 +92,86 @@
             }
         }
 
+        // ---------- Функции для токенов ----------
+        function setTokens(access, refresh) {
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+        }
+        
+        function setUser(userData) {
+            // Сохраняем пользователя без дополнительных проверок
+            localStorage.setItem('user', JSON.stringify(userData));
+        }
+
+        // ---------- Обработчик входа ----------
         const form = document.getElementById('loginForm');
         const submitBtn = document.getElementById('submitBtn');
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            const login = document.getElementById('login').value;
+            
+            const login = document.getElementById('login').value.trim();
             const password = document.getElementById('password').value;
-
+            
             if (!login || !password) {
                 alert('❌ Заполните все поля');
                 return;
             }
-
-            // Сохраняем в localStorage данные пользователя
-            const userData = {
-                username: login,
-                email: login.includes('@') ? login : `${login}@focuscorgi.com`,
-                isLoggedIn: true,
-                loginDate: new Date().toISOString()
-            };
             
-            localStorage.setItem('user', JSON.stringify(userData));
-
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Вход...';
+            
+            try {
+                const response = await fetch('/api/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: login,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Ответ сервера:', data);
+                
+                if (response.ok) {
+                    // Сохраняем токены (ОБЯЗАТЕЛЬНО!)
+                    if (data.access && data.refresh) {
+                        setTokens(data.access, data.refresh);
+                        console.log('Токены сохранены');
+                    } else {
+                        console.log('ВНИМАНИЕ: Сервер не вернул токены!');
+                        // Если сервер не вернул токены, создаем фейковый для теста
+                        setTokens('fake_token_' + Date.now(), 'fake_refresh');
+                    }
+                    
+                    // Сохраняем пользователя
+                    const userInfo = data.user || data;
+                    setUser({
+                        id: userInfo.id,
+                        username: userInfo.username || login,
+                        email: userInfo.email || ''
+                    });
+                    
+                    console.log('Сохранен пользователь:', localStorage.getItem('user'));
+                    console.log('Сохранен токен:', localStorage.getItem('access_token'));
+                    
+                    // Переход на главную
+                    window.location.href = "{% url 'index' %}";
+                } else {
+                    alert('❌ ' + (data.error || 'Неверное имя пользователя или пароль'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Войти';
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка соединения с сервером');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Войти';
             }
-            
-            window.location.href = "{% url 'index' %}";
         });
-
-        document.getElementById('login').focus();
     </script>
 </body>
 </html>

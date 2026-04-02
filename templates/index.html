@@ -9,7 +9,6 @@
 
 {% block content %}
 <div class="container">
-    <!-- Звуковая панель -->
     <div class="sound-panel" id="soundPanel" style="display: none;">
         <div class="sound-content">
             <i class="fa-solid fa-bell fa-shake"></i>
@@ -17,7 +16,6 @@
         </div>
     </div>
 
-    <!-- Большой таймер -->
     <div class="timer-card">
         <div class="timer-status">
             <span class="mode-badge" id="modeBadge">Работа</span>
@@ -41,13 +39,8 @@
         </div>
     </div>
 
-    <!-- Настройки -->
     <div class="settings-section">
-        <h3>
-            <i class="fa-solid fa-sliders"></i>
-            Настройки времени
-        </h3>
-
+        <h3><i class="fa-solid fa-sliders"></i> Настройки времени</h3>
         <div class="settings-grid">
             <div class="setting-item">
                 <label><i class="fa-regular fa-clock"></i> Работа (мин)</label>
@@ -56,7 +49,6 @@
                     <input type="number" id="workInput" class="number-input" min="1" max="60" value="25" step="1">
                 </div>
             </div>
-
             <div class="setting-item">
                 <label><i class="fa-regular fa-mug-saucer"></i> Отдых (мин)</label>
                 <div class="slider-container">
@@ -64,7 +56,6 @@
                     <input type="number" id="shortBreakInput" class="number-input" min="1" max="30" value="5" step="1">
                 </div>
             </div>
-
             <div class="setting-item">
                 <label><i class="fa-regular fa-sun"></i> Большой перерыв (мин)</label>
                 <div class="slider-container">
@@ -72,7 +63,6 @@
                     <input type="number" id="longBreakInput" class="number-input" min="1" max="60" value="15" step="1">
                 </div>
             </div>
-
             <div class="setting-item">
                 <label><i class="fa-solid fa-rotate-right"></i> Циклов до большого</label>
                 <div class="slider-container">
@@ -81,13 +71,9 @@
                 </div>
             </div>
         </div>
-
-        <button class="reset-settings-btn" id="resetSettingsBtn">
-            <i class="fa-solid fa-undo"></i> Сбросить на 25/5/15
-        </button>
+        <button class="reset-settings-btn" id="resetSettingsBtn"><i class="fa-solid fa-undo"></i> Сбросить на 25/5/15</button>
     </div>
 
-    <!-- Описание метода Помодоро -->
     <div class="info-section">
         <h2>🍅 Что такое Pomodoro?</h2>
         <div class="info-grid">
@@ -110,7 +96,6 @@
     </div>
 </div>
 
-<!-- Аудио -->
 <audio id="notificationSound" preload="auto" loop>
     <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.mp3" type="audio/mpeg">
@@ -119,13 +104,6 @@
 
 {% block extra_js %}
 <script>
-    // Проверяем статус уведомлений при загрузке
-    if (Notification.permission === 'granted') {
-        console.log('Уведомления уже разрешены');
-    } else if (Notification.permission === 'denied') {
-        console.log('Уведомления заблокированы пользователем');
-    }
-
     // ---------- Элементы ----------
     const timerDisplay = document.getElementById('timer');
     const modeBadge = document.getElementById('modeBadge');
@@ -146,28 +124,45 @@
     const cyclesInput = document.getElementById('cyclesInput');
     const resetSettingsBtn = document.getElementById('resetSettingsBtn');
 
-    // ---------- Состояние ----------
-    let currentMode = 'work';
-    let timeLeft = 25 * 60;
-    let timerInterval = null;
-    let isRunning = false;
-    let workCyclesCompleted = 0;
-
-    // Значения по умолчанию
+    // ---------- Значения по умолчанию ----------
     const DEFAULTS = { work: 25, shortBreak: 5, longBreak: 15, cycles: 4 };
 
-    // Текущие настройки
+    // ---------- Загрузка настроек из localStorage ----------
     let settings = {
-        work: DEFAULTS.work,
-        shortBreak: DEFAULTS.shortBreak,
-        longBreak: DEFAULTS.longBreak,
-        cyclesBeforeLongBreak: DEFAULTS.cycles
+        work: parseInt(localStorage.getItem('workTime')) || DEFAULTS.work,
+        shortBreak: parseInt(localStorage.getItem('shortBreakTime')) || DEFAULTS.shortBreak,
+        longBreak: parseInt(localStorage.getItem('longBreakTime')) || DEFAULTS.longBreak,
+        cyclesBeforeLongBreak: parseInt(localStorage.getItem('cyclesCount')) || DEFAULTS.cycles
     };
+
+    // Применяем настройки к слайдерам
+    workSlider.value = settings.work;
+    workInput.value = settings.work;
+    shortBreakSlider.value = settings.shortBreak;
+    shortBreakInput.value = settings.shortBreak;
+    longBreakSlider.value = settings.longBreak;
+    longBreakInput.value = settings.longBreak;
+    cyclesSlider.value = settings.cyclesBeforeLongBreak;
+    cyclesInput.value = settings.cyclesBeforeLongBreak;
+
+    // ---------- Состояние таймера ----------
+    let currentMode = 'work';
+    let timeLeft = settings.work * 60;
+    let timerInterval = null;
+    let isRunning = false;
+    let workCyclesCompleted = parseInt(localStorage.getItem('workCyclesCompleted')) || 0;
+
+    // ---------- Функция сохранения настроек ----------
+    function saveSettings() {
+        localStorage.setItem('workTime', settings.work);
+        localStorage.setItem('shortBreakTime', settings.shortBreak);
+        localStorage.setItem('longBreakTime', settings.longBreak);
+        localStorage.setItem('cyclesCount', settings.cyclesBeforeLongBreak);
+    }
 
     // ---------- Звук и уведомления ----------
     function playAlarmAndNotify() {
         soundPanel.style.display = 'flex';
-
         notificationSound.loop = true;
         notificationSound.volume = 1.0;
         notificationSound.play().catch(e => console.log('Audio error:', e));
@@ -175,22 +170,13 @@
         const modeText = currentMode === 'work' ? '🍅 Работа' :
                         (currentMode === 'shortBreak' ? '☕ Отдых' : '🌟 Большой перерыв');
 
-        const nextModeText = currentMode === 'work' ?
-            ((workCyclesCompleted + 1) % settings.cyclesBeforeLongBreak === 0 ? 'большой перерыв' : 'отдых')
-            : 'работу';
-
         if (Notification.permission === 'granted') {
-            const notification = new Notification('⏰ FocusCorgi', {
-                body: `${modeText} завершена!\nСледующее: ${nextModeText}\n\n👇 Нажми чтобы выключить звук`,
+            new Notification('⏰ FocusCorgi', {
+                body: `${modeText} завершена!`,
                 icon: 'https://cdn-icons-png.flaticon.com/512/564/564619.png',
                 requireInteraction: true,
                 silent: true
             });
-
-            notification.onclick = function() {
-                stopAlarm();
-                window.focus();
-            };
         } else if (Notification.permission === 'default') {
             Notification.requestPermission();
         }
@@ -248,6 +234,8 @@
     function switchToNextMode() {
         if (currentMode === 'work') {
             workCyclesCompleted++;
+            localStorage.setItem('workCyclesCompleted', workCyclesCompleted);
+            
             if (workCyclesCompleted % settings.cyclesBeforeLongBreak === 0) {
                 setMode('longBreak');
             } else {
@@ -306,8 +294,6 @@
             if (isRunning) {
                 pauseTimer();
             }
-            workCyclesCompleted = 0;
-            setMode('work');
             startTimer();
         });
     }
@@ -320,7 +306,6 @@
         resetBtn.addEventListener('click', () => {
             stopAlarm();
             pauseTimer();
-            workCyclesCompleted = 0;
             setMode('work');
         });
     }
@@ -336,6 +321,8 @@
         shortBreakInput.value = settings.shortBreak;
         longBreakInput.value = settings.longBreak;
         cyclesInput.value = settings.cyclesBeforeLongBreak;
+
+        saveSettings();
 
         if (!isRunning) {
             setMode(currentMode);
