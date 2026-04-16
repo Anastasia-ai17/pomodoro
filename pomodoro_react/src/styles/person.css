@@ -306,3 +306,32 @@ body.dark .modal-content {
         grid-template-columns: 1fr;
     }
 }
+
+/* Стили для выбора даты рождения */
+.birthdate-selectors {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.birthdate-select {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.birthdate-select:hover {
+    border-color: #cbd5e1;
+}
+
+.birthdate-select:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}

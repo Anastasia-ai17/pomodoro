@@ -190,11 +190,32 @@ function Index() {
     };
     
     const resetToDefaults = () => {
-        updateSetting('work', 25);
-        updateSetting('shortBreak', 5);
-        updateSetting('longBreak', 15);
-        updateSetting('cyclesBeforeLongBreak', 4);
-    };
+        stopAlarm();
+        
+        const defaultSettings = {
+            work: 25,
+            shortBreak: 5,
+            longBreak: 15,
+            cyclesBeforeLongBreak: 4
+        };
+        
+        setSettings(defaultSettings);
+        
+        localStorage.setItem('workTime', 25);
+        localStorage.setItem('shortBreakTime', 5);
+        localStorage.setItem('longBreakTime', 15);
+        localStorage.setItem('cyclesCount', 4);
+        
+        if (!isRunning) {
+            if (currentMode === 'work') {
+                setTimeLeft(25 * 60);
+            } else if (currentMode === 'shortBreak') {
+                setTimeLeft(5 * 60);
+            } else if (currentMode === 'longBreak') {
+                setTimeLeft(15 * 60);
+            }
+        }
+};
     
     return (
         <div className="container">
