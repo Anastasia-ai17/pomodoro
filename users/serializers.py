@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from .models import User
+from .models import User, UserAvatar, Avatar
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -78,3 +78,17 @@ class UserThemeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('theme',)
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Avatar
+        fields = ('id', 'name', 'image', 'price_coins', 'is_default')
+
+
+class UserAvatarSerializer(serializers.ModelSerializer):
+    avatar = AvatarSerializer(read_only=True)
+    avatar_id = serializers.IntegerField(write_only=True)
+    
+    class Meta:
+        model = UserAvatar
+        fields = ('id', 'avatar', 'avatar_id', 'purchased_at', 'is_active')
+        read_only_fields = ('id', 'purchased_at')
