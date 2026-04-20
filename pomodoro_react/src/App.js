@@ -7,24 +7,20 @@ import Regist from './components/regist/Regist';
 import Person from './components/person/Person';
 import Shop from './components/shop/Shop';
 import { useAuth } from './context/AuthContext';
+import './styles/global.css';
 
 function App() {
     const { loading } = useAuth();
-    
+
+    // Показываем загрузку пока проверяется авторизация
     if (loading) {
         return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100vh',
-                fontSize: '20px'
-            }}>
-                🐶 Загрузка FocusCorgi...
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '20px' }}>
+                🌊 Загрузка FocusFlow...
             </div>
         );
     }
-    
+
     return (
         <Routes>
             <Route path="/" element={<Base />}>

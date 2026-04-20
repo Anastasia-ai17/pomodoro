@@ -15,8 +15,8 @@ function Base() {
             <header className="header">
                 <div className="header-content">
                     <div className="logo" onClick={() => navigate('/')}>
-                        <i className="fa-solid fa-paw"></i>
-                        <span>FocusCorgi</span>
+                        <i className="fa-solid fa-water"></i> {/* Иконка потока/волны */}
+                        <span>FocusFlow</span>
                     </div>
                     <nav className="nav">
                         <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>

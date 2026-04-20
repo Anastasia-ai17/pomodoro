@@ -3,29 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/auth.css';
 
-const getErrorMessage = (payload, fallback) => {
-    if (!payload) {
-        return fallback;
-    }
-    if (typeof payload === 'string') {
-        return payload;
-    }
-    if (Array.isArray(payload)) {
-        return payload.join(' ');
-    }
-
-    const source = payload.errors || payload.detail || payload;
-    if (typeof source === 'string') {
-        return source;
-    }
-
-    return Object.values(source)
-        .flat()
-        .map((value) => (typeof value === 'string' ? value : ''))
-        .filter(Boolean)
-        .join(' ') || fallback;
-};
-
 function Regist() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -36,32 +13,28 @@ function Regist() {
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
     const navigate = useNavigate();
-
     const passwordsMatch = password && confirmPassword && password === confirmPassword;
+
+    const getErrorMessage = (payload, fallback) => {
+        if (!payload) return fallback;
+        if (typeof payload === 'string') return payload;
+        if (Array.isArray(payload)) return payload.join(' ');
+        const source = payload.errors || payload.detail || payload;
+        if (typeof source === 'string') return source;
+        return Object.values(source).flat().map(v => typeof v === 'string' ? v : '').filter(Boolean).join(' ') || fallback;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (password !== confirmPassword) {
-            alert('❌ Пароли не совпадают');
-            return;
-        }
-
-        if (password.length < 6) {
-            alert('❌ Пароль должен быть минимум 6 символов');
-            return;
-        }
-
+        if (password !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
+        if (password.length < 6) { alert('❌ Пароль должен быть минимум 6 символов'); return; }
         setLoading(true);
-
         try {
             await register({ username, email, password });
             navigate('/');
         } catch (error) {
             alert(`❌ ${getErrorMessage(error.response?.data, 'Ошибка регистрации')}`);
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     };
 
     return (
@@ -74,66 +47,30 @@ function Regist() {
                 </div>
                 <h2>Создать аккаунт</h2>
                 <p className="subtitle">Начни свой путь к продуктивности ✨</p>
-
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <label>Имя пользователя</label>
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="corgi_lover"
-                            required
-                        />
+                        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="corgi_lover" required />
                     </div>
-
                     <div className="input-group">
                         <label>Электронная почта</label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="hello@focuscorgi.com"
-                            required
-                        />
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="hello@focusflow.com" required />
                     </div>
-
                     <div className="input-group">
                         <label>Пароль</label>
                         <div className="password-container">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="toggle-password"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
+                            <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+                            <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
                                 <i className={`fa-regular ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                             </button>
                         </div>
                         <small className="hint">минимум 6 символов</small>
                     </div>
-
                     <div className="input-group">
                         <label>Повторите пароль</label>
                         <div className="password-container">
-                            <input
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="toggle-password"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            >
+                            <input type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" required />
+                            <button type="button" className="toggle-password" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                 <i className={`fa-regular ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                             </button>
                         </div>
@@ -144,15 +81,9 @@ function Regist() {
                             </div>
                         )}
                     </div>
-
-                    <button type="submit" className="btn" disabled={loading}>
-                        {loading ? 'Регистрация...' : 'Зарегистрироваться'}
-                    </button>
+                    <button type="submit" className="btn" disabled={loading}>{loading ? 'Регистрация...' : 'Зарегистрироваться'}</button>
                 </form>
-
-                <p className="login-link">
-                    Уже есть аккаунт? <Link to="/auth">Войти</Link>
-                </p>
+                <p className="login-link">Уже есть аккаунт? <Link to="/auth">Войти</Link></p>
             </div>
         </div>
     );

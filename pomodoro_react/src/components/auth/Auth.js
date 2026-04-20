@@ -3,10 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/auth.css';
 
-const getErrorMessage = (payload, fallback) => {
-    // ... функция без изменений
-};
-
 function Auth() {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
@@ -15,18 +11,24 @@ function Auth() {
     const { login: loginUser } = useAuth();
     const navigate = useNavigate();
 
+    const getErrorMessage = (payload, fallback) => {
+        if (!payload) return fallback;
+        if (typeof payload === 'string') return payload;
+        if (Array.isArray(payload)) return payload.join(' ');
+        const source = payload.errors || payload.detail || payload;
+        if (typeof source === 'string') return source;
+        return Object.values(source).flat().map(v => typeof v === 'string' ? v : '').filter(Boolean).join(' ') || fallback;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         try {
             await loginUser({ login, password });
             navigate('/');
         } catch (error) {
             alert(`❌ ${getErrorMessage(error.response?.data, 'Неверное имя пользователя или пароль')}`);
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     };
 
     return (
@@ -39,47 +41,23 @@ function Auth() {
                 </div>
                 <h2>Добро пожаловать!</h2>
                 <p className="subtitle">Войди в свой аккаунт ✨</p>
-
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <label>Email или имя пользователя</label>
-                        <input
-                            type="text"
-                            value={login}
-                            onChange={(e) => setLogin(e.target.value)}
-                            placeholder="corgi_lover@mail.ru"
-                            required
-                        />
+                        <input type="text" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="corgi_lover@mail.ru" required />
                     </div>
-
                     <div className="input-group">
                         <label>Пароль</label>
                         <div className="password-container">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="toggle-password"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
+                            <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+                            <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
                                 <i className={`fa-regular ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                             </button>
                         </div>
                     </div>
-
-                    <button type="submit" className="btn" disabled={loading}>
-                        {loading ? 'Вход...' : 'Войти'}
-                    </button>
+                    <button type="submit" className="btn" disabled={loading}>{loading ? 'Вход...' : 'Войти'}</button>
                 </form>
-
-                <p className="register-link">
-                    Ещё нет аккаунта? <Link to="/regist">Создать аккаунт</Link>
-                </p>
+                <p className="register-link">Ещё нет аккаунта? <Link to="/regist">Создать аккаунт</Link></p>
             </div>
         </div>
     );

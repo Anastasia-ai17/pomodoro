@@ -1,8 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
@@ -11,145 +7,44 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Тёмная тема */
 body.dark {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: #e0e0e0;
 }
 
-/* Контейнер */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
 /* Анимации */
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-}
-
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* src/styles/global.css - добавьте в конец файла */
-
-/* Тема: Лесная (тёмная и светлая) */
-body.theme-forest {
-    background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
-}
-
-body.dark.theme-forest {
-    background: linear-gradient(135deg, #0a2f1f 0%, #051a0f 100%);
-}
-
-body.theme-forest .timer-circle {
-    background: linear-gradient(135deg, #40916c, #2d6a4f);
-}
-
-body.dark.theme-forest .timer-circle {
-    background: linear-gradient(135deg, #1b4332, #0a2f1f);
-}
-
-body.theme-forest .mode-badge,
-body.theme-forest .nav-link.active {
-    background: #40916c;
-    color: #d8f3dc;
-}
-
-body.dark.theme-forest .mode-badge,
-body.dark.theme-forest .nav-link.active {
-    background: #1b4332;
-    color: #b7e4c7;
-}
-
-body.theme-forest .control-btn.primary {
-    background: #40916c;
-}
-
-body.theme-forest .control-btn.primary:hover {
-    background: #2d6a4f;
-}
+/* Тема: Лесная */
+body.theme-forest { background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%); }
+body.dark.theme-forest { background: linear-gradient(135deg, #0a2f1f 0%, #051a0f 100%); }
+body.theme-forest .timer-circle { background: linear-gradient(135deg, #40916c, #2d6a4f); }
+body.dark.theme-forest .timer-circle { background: linear-gradient(135deg, #1b4332, #0a2f1f); }
+body.theme-forest .mode-badge, body.theme-forest .nav-link.active { background: #40916c; color: #d8f3dc; }
+body.dark.theme-forest .mode-badge, body.dark.theme-forest .nav-link.active { background: #1b4332; color: #b7e4c7; }
+body.theme-forest .control-btn.primary { background: #40916c; }
+body.theme-forest .control-btn.primary:hover { background: #2d6a4f; }
 
 /* Тема: Океан */
-body.theme-ocean {
-    background: linear-gradient(135deg, #0f5b82 0%, #0a3a52 100%);
-}
-
-body.dark.theme-ocean {
-    background: linear-gradient(135deg, #062c40 0%, #031a26 100%);
-}
-
-body.theme-ocean .timer-circle {
-    background: linear-gradient(135deg, #1e6f9f, #0f5b82);
-}
-
-body.dark.theme-ocean .timer-circle {
-    background: linear-gradient(135deg, #0a3a52, #062c40);
-}
-
-body.theme-ocean .mode-badge,
-body.theme-ocean .nav-link.active {
-    background: #1e6f9f;
-    color: #bae6fd;
-}
-
-body.dark.theme-ocean .mode-badge,
-body.dark.theme-ocean .nav-link.active {
-    background: #0a3a52;
-    color: #7dd3fc;
-}
-
-body.theme-ocean .control-btn.primary {
-    background: #1e6f9f;
-}
-
-body.theme-ocean .control-btn.primary:hover {
-    background: #0f5b82;
-}
+body.theme-ocean { background: linear-gradient(135deg, #0f5b82 0%, #0a3a52 100%); }
+body.dark.theme-ocean { background: linear-gradient(135deg, #062c40 0%, #031a26 100%); }
+body.theme-ocean .timer-circle { background: linear-gradient(135deg, #1e6f9f, #0f5b82); }
+body.dark.theme-ocean .timer-circle { background: linear-gradient(135deg, #0a3a52, #062c40); }
+body.theme-ocean .mode-badge, body.theme-ocean .nav-link.active { background: #1e6f9f; color: #bae6fd; }
+body.dark.theme-ocean .mode-badge, body.dark.theme-ocean .nav-link.active { background: #0a3a52; color: #7dd3fc; }
+body.theme-ocean .control-btn.primary { background: #1e6f9f; }
+body.theme-ocean .control-btn.primary:hover { background: #0f5b82; }
 
 /* Тема: Закат */
-body.theme-sunset {
-    background: linear-gradient(135deg, #ea580c 0%, #9a3412 100%);
-}
-
-body.dark.theme-sunset {
-    background: linear-gradient(135deg, #5a1e0a 0%, #3a1205 100%);
-}
-
-body.theme-sunset .timer-circle {
-    background: linear-gradient(135deg, #f97316, #ea580c);
-}
-
-body.dark.theme-sunset .timer-circle {
-    background: linear-gradient(135deg, #9a3412, #5a1e0a);
-}
-
-body.theme-sunset .mode-badge,
-body.theme-sunset .nav-link.active {
-    background: #f97316;
-    color: #fed7aa;
-}
-
-body.dark.theme-sunset .mode-badge,
-body.dark.theme-sunset .nav-link.active {
-    background: #9a3412;
-    color: #fdba74;
-}
-
-body.theme-sunset .control-btn.primary {
-    background: #f97316;
-}
-
-body.theme-sunset .control-btn.primary:hover {
-    background: #ea580c;
-}
+body.theme-sunset { background: linear-gradient(135deg, #ea580c 0%, #9a3412 100%); }
+body.dark.theme-sunset { background: linear-gradient(135deg, #5a1e0a 0%, #3a1205 100%); }
+body.theme-sunset .timer-circle { background: linear-gradient(135deg, #f97316, #ea580c); }
+body.dark.theme-sunset .timer-circle { background: linear-gradient(135deg, #9a3412, #5a1e0a); }
+body.theme-sunset .mode-badge, body.theme-sunset .nav-link.active { background: #f97316; color: #fed7aa; }
+body.dark.theme-sunset .mode-badge, body.dark.theme-sunset .nav-link.active { background: #9a3412; color: #fdba74; }
+body.theme-sunset .control-btn.primary { background: #f97316; }
+body.theme-sunset .control-btn.primary:hover { background: #ea580c; }

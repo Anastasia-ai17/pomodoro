@@ -1,9 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-
 import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
-
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -11,17 +9,13 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+    // Сохранение токенов и данных пользователя
     const persistAuth = useCallback((payload) => {
         const userData = payload.user;
         const access = payload.tokens?.access;
         const refresh = payload.tokens?.refresh;
-
-        if (access) {
-            localStorage.setItem('access_token', access);
-        }
-        if (refresh) {
-            localStorage.setItem('refresh_token', refresh);
-        }
+        if (access) localStorage.setItem('access_token', access);
+        if (refresh) localStorage.setItem('refresh_token', refresh);
         if (userData) {
             localStorage.setItem('user', JSON.stringify(userData));
             setUser(userData);
@@ -30,6 +24,7 @@ export const AuthProvider = ({ children }) => {
         return payload;
     }, []);
 
+    // Очистка данных при выходе
     const clearAuth = useCallback(() => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
@@ -38,6 +33,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
     }, []);
 
+    // Проверка валидности токена при загрузке
     const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('access_token');
         if (!token) {
@@ -45,7 +41,6 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
             return;
         }
-
         try {
             const response = await authAPI.getMe();
             if (response.data?.authenticated && response.data.user) {
@@ -61,9 +56,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, [clearAuth]);
 
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
+    useEffect(() => { checkAuth(); }, [checkAuth]);
 
     const register = useCallback(async (userData) => {
         const response = await authAPI.register(userData);
@@ -76,15 +69,11 @@ export const AuthProvider = ({ children }) => {
     }, [persistAuth]);
 
     const logout = useCallback(async () => {
-        try {
-            await authAPI.logout();
-        } catch (error) {
-            // Token logout is client-side only, so request failure is non-blocking.
-        } finally {
-            clearAuth();
-        }
+        try { await authAPI.logout(); } catch (error) {}
+        finally { clearAuth(); }
     }, [clearAuth]);
 
+    // Обновление данных пользователя в state и localStorage
     const updateUser = useCallback((newData) => {
         setUser((prev) => {
             const nextUser = { ...(prev || {}), ...newData };
@@ -94,18 +83,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                loading,
-                isAuthenticated,
-                register,
-                login,
-                logout,
-                updateUser,
-                checkAuth,
-            }}
-        >
+        <AuthContext.Provider value={{ user, loading, isAuthenticated, register, login, logout, updateUser, checkAuth }}>
             {children}
         </AuthContext.Provider>
     );
