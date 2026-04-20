@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import '../../styles/base.css';
 
 function Base() {
-    const { isAuthenticated, user, logout } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
@@ -23,17 +23,15 @@ function Base() {
                             <i className="fa-solid fa-house"></i>
                             Главная
                         </Link>
+                        <Link to="/shop" className={`nav-link ${location.pathname === '/shop' ? 'active' : ''}`}>
+                            <i className="fa-solid fa-store"></i>
+                            Магазин
+                        </Link>
                         {isAuthenticated ? (
-                            <>
-                                <Link to="/person" className={`nav-link ${location.pathname === '/person' ? 'active' : ''}`}>
-                                    <i className="fa-solid fa-user"></i>
-                                    {user?.username || 'Профиль'}
-                                </Link>
-                                <button onClick={logout} className="nav-link">
-                                    <i className="fa-solid fa-sign-out-alt"></i>
-                                    Выйти
-                                </button>
-                            </>
+                            <Link to="/person" className={`nav-link ${location.pathname === '/person' ? 'active' : ''}`}>
+                                <i className="fa-solid fa-user"></i>
+                                {user?.username || 'Профиль'}
+                            </Link>
                         ) : (
                             <Link to="/auth" className={`nav-link ${location.pathname === '/auth' ? 'active' : ''}`}>
                                 <i className="fa-solid fa-right-to-bracket"></i>

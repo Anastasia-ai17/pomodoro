@@ -1,29 +1,37 @@
 /* src/styles/auth.css */
-.container {
+.auth-page {
     max-width: 440px;
     margin: 0 auto;
+    width: 100%;
+    padding: 20px;
 }
 
-.card {
+.auth-page .card {
     background: white;
     border-radius: 20px;
     padding: 40px 30px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.5s ease;
     position: relative;
+    width: 100%;
 }
 
-body.dark .card {
+body.dark .auth-page .card {
     background: #1e1e2f;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
-.logo {
+.auth-page .logo {
     text-align: center;
     margin-bottom: 20px;
 }
 
-h2 {
+.auth-page .logo svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.auth-page h2 {
     text-align: center;
     font-size: 28px;
     font-weight: 600;
@@ -31,26 +39,26 @@ h2 {
     margin-bottom: 8px;
 }
 
-body.dark h2 {
+body.dark .auth-page h2 {
     color: #e0e0e0;
 }
 
-.subtitle {
+.auth-page .subtitle {
     text-align: center;
     color: #666;
     font-size: 14px;
     margin-bottom: 30px;
 }
 
-body.dark .subtitle {
+body.dark .auth-page .subtitle {
     color: #aaa;
 }
 
-.input-group {
+.auth-page .input-group {
     margin-bottom: 20px;
 }
 
-.input-group label {
+.auth-page .input-group label {
     display: block;
     font-size: 14px;
     font-weight: 500;
@@ -58,11 +66,11 @@ body.dark .subtitle {
     margin-bottom: 6px;
 }
 
-body.dark .input-group label {
+body.dark .auth-page .input-group label {
     color: #aaa;
 }
 
-.input-group input {
+.auth-page .input-group input {
     width: 100%;
     padding: 12px 16px;
     font-size: 15px;
@@ -72,31 +80,32 @@ body.dark .input-group label {
     font-family: 'Inter', sans-serif;
     background: white;
     color: #333;
+    box-sizing: border-box;
 }
 
-body.dark .input-group input {
+body.dark .auth-page .input-group input {
     background: #2d2d44;
     border-color: #3d3d5c;
     color: #e0e0e0;
 }
 
-.input-group input:focus {
+.auth-page .input-group input:focus {
     outline: none;
     border-color: #4F46E5;
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
-.password-container {
+.auth-page .password-container {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.password-container input {
+.auth-page .password-container input {
     padding-right: 45px;
 }
 
-.toggle-password {
+.auth-page .toggle-password {
     position: absolute;
     right: 15px;
     background: none;
@@ -106,18 +115,18 @@ body.dark .input-group input {
     font-size: 18px;
 }
 
-.toggle-password:hover {
+.auth-page .toggle-password:hover {
     color: #4F46E5;
 }
 
-.hint {
+.auth-page .hint {
     display: block;
     font-size: 12px;
     color: #888;
     margin-top: 4px;
 }
 
-.password-match {
+.auth-page .password-match {
     font-size: 12px;
     margin-top: 4px;
     display: flex;
@@ -125,15 +134,15 @@ body.dark .input-group input {
     gap: 4px;
 }
 
-.match-success {
+.auth-page .match-success {
     color: #10b981;
 }
 
-.match-error {
+.auth-page .match-error {
     color: #ef4444;
 }
 
-.btn {
+.auth-page .btn {
     width: 100%;
     padding: 14px;
     background: #4F46E5;
@@ -147,31 +156,34 @@ body.dark .input-group input {
     margin-top: 10px;
 }
 
-.btn:hover {
+.auth-page .btn:hover {
     background: #4338CA;
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
 }
 
-.btn:disabled {
+.auth-page .btn:disabled {
     background: #a5a5a5;
     cursor: not-allowed;
     transform: none;
 }
 
-.register-link, .login-link {
+.auth-page .register-link,
+.auth-page .login-link {
     text-align: center;
     margin-top: 25px;
     font-size: 14px;
     color: #666;
 }
 
-.register-link a, .login-link a {
+.auth-page .register-link a,
+.auth-page .login-link a {
     color: #4F46E5;
     text-decoration: none;
     font-weight: 500;
 }
 
-.register-link a:hover, .login-link a:hover {
+.auth-page .register-link a:hover,
+.auth-page .login-link a:hover {
     text-decoration: underline;
 }

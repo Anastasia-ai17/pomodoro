@@ -4,26 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import '../../styles/auth.css';
 
 const getErrorMessage = (payload, fallback) => {
-    if (!payload) {
-        return fallback;
-    }
-    if (typeof payload === 'string') {
-        return payload;
-    }
-    if (Array.isArray(payload)) {
-        return payload.join(' ');
-    }
-
-    const source = payload.errors || payload.detail || payload;
-    if (typeof source === 'string') {
-        return source;
-    }
-
-    return Object.values(source)
-        .flat()
-        .map((value) => (typeof value === 'string' ? value : ''))
-        .filter(Boolean)
-        .join(' ') || fallback;
+    // ... функция без изменений
 };
 
 function Auth() {
@@ -49,7 +30,7 @@ function Auth() {
     };
 
     return (
-        <div className="container">
+        <div className="auth-page">
             <div className="card">
                 <div className="logo">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

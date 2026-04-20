@@ -5,6 +5,7 @@ import Index from './components/index/Index';
 import Auth from './components/auth/Auth';
 import Regist from './components/regist/Regist';
 import Person from './components/person/Person';
+import Shop from './components/shop/Shop';
 import { useAuth } from './context/AuthContext';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                 <Route path="auth" element={<Auth />} />
                 <Route path="regist" element={<Regist />} />
                 <Route path="person" element={<Person />} />
+                <Route path="shop" element={<Shop />} />
             </Route>
         </Routes>
     );

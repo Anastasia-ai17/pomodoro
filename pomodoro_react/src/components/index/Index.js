@@ -277,7 +277,7 @@ function Index() {
                     </div>
                     
                     <div className="setting-item">
-                        <label><i className="fa-regular fa-mug-saucer"></i> Отдых (мин)</label>
+                        <label><i className="fa-solid fa-mug-hot"></i> Отдых (мин)</label>
                         <div className="slider-container">
                             <input
                                 type="range"
