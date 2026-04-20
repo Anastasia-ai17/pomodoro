@@ -40,8 +40,8 @@ body.dark .card-title {
 
 .avatar {
     width: 120px;
-    height: 120px;
     border-radius: 50%;
+    height: 120px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     display: flex;
     align-items: center;
@@ -334,4 +334,24 @@ body.dark .modal-content {
     outline: none;
     border-color: #f97316;
     box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Добавить в конец person.css */
+.avatar-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+}
+
+body.dark .avatar-hint {
+    color: #aaa;
+}
+
+.avatar-hint i {
+    color: #4F46E5;
 }

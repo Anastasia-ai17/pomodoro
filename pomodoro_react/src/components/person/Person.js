@@ -1,3 +1,4 @@
+// src/components/person/Person.js
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -26,19 +27,27 @@ function Person() {
         month: 0
     });
     
+    // Доступные аватары (стандартные + купленные в магазине)
+    const [availableAvatars, setAvailableAvatars] = useState([
+        { icon: 'fa-dog', emoji: '🐶', name: 'Корги' },
+        { icon: 'fa-cat', emoji: '🐱', name: 'Кот' },
+        { icon: 'fa-fish', emoji: '🐟', name: 'Рыбка' },
+        { icon: 'fa-dove', emoji: '🐦', name: 'Голубь' },
+        { icon: 'fa-otter', emoji: '🦦', name: 'Выдра' },
+        { icon: 'fa-frog', emoji: '🐸', name: 'Лягушка' }
+    ]);
+    
+    // Все возможные аватары из магазина
+    const shopAvatars = [
+        { icon: 'fa-fox', emoji: '🦊', name: 'Лисёнок', price: 300 },
+        { icon: 'fa-panda', emoji: '🐼', name: 'Панда', price: 350 },
+        { icon: 'fa-penguin', emoji: '🐧', name: 'Пингвин', price: 300 }
+    ];
+    
     // Флаг для отслеживания первой загрузки
     const isFirstLoad = useRef(true);
     // Флаг для предотвращения перезагрузки после выбора аватара
     const shouldReload = useRef(true);
-    
-    const avatars = [
-        { icon: 'fa-dog', emoji: '🐶' },
-        { icon: 'fa-cat', emoji: '🐱' },
-        { icon: 'fa-fish', emoji: '🐟' },
-        { icon: 'fa-dove', emoji: '🐦' },
-        { icon: 'fa-otter', emoji: '🦦' },
-        { icon: 'fa-frog', emoji: '🐸' }
-    ];
     
     // Генерация списка дней (1-31)
     const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -62,6 +71,22 @@ function Person() {
     // Генерация списка годов (1900 - текущий год)
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
+    
+    // Загрузка купленных аватаров из localStorage
+    const loadPurchasedAvatars = useCallback(() => {
+        const purchased = localStorage.getItem('purchasedAvatars');
+        if (purchased) {
+            const purchasedIds = JSON.parse(purchased);
+            // Добавляем купленные аватары из магазина
+            const additionalAvatars = shopAvatars.filter(av => purchasedIds.includes(av.icon));
+            setAvailableAvatars(prev => {
+                // Проверяем, чтобы не дублировать
+                const currentIcons = prev.map(av => av.icon);
+                const newAvatars = additionalAvatars.filter(av => !currentIcons.includes(av.icon));
+                return [...prev, ...newAvatars];
+            });
+        }
+    }, []);
     
     const loadUserData = useCallback(async () => {
         // Если не нужно перезагружать (пользователь сам выбрал аватар), пропускаем
@@ -116,9 +141,10 @@ function Person() {
             navigate('/auth');
             return;
         }
+        loadPurchasedAvatars();
         loadUserData();
         loadStats();
-    }, [loadStats, loadUserData, navigate, user]);
+    }, [loadStats, loadUserData, navigate, user, loadPurchasedAvatars]);
     
     const formatTime = (minutes) => {
         const hours = Math.floor(minutes / 60);
@@ -293,16 +319,21 @@ function Person() {
                             <i className={`fa-solid ${selectedAvatar}`}></i>
                         </div>
                         <div className="avatar-selector">
-                            {avatars.map(av => (
+                            {availableAvatars.map(av => (
                                 <div
                                     key={av.icon}
                                     className={`avatar-option ${selectedAvatar === av.icon ? 'selected' : ''}`}
                                     onClick={() => handleAvatarSelect(av.icon)}
+                                    title={av.name}
                                 >
                                     {av.emoji}
                                 </div>
                             ))}
                         </div>
+                        <p className="avatar-hint">
+                            <i className="fa-solid fa-store"></i> 
+                            Новые аватары можно купить в магазине
+                        </p>
                     </div>
                     
                     <div className="profile-form">
