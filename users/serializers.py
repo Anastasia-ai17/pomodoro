@@ -43,30 +43,51 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(
-        write_only=True,
-        style={'input_type': 'password'}
-    )
+    login = serializers.CharField(required=False, allow_blank=True)  # новое поле
+    username = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        login = data.get('login')
         username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
 
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if user:
-                if user.is_active:
-                    data['user'] = user
-                else:
-                    raise serializers.ValidationError("Пользователь деактивирован")
-            else:
-                raise serializers.ValidationError("Неверное имя пользователя или пароль")
-        else:
-            raise serializers.ValidationError("Необходимо указать имя пользователя и пароль")
-        
-        return data
+        if not password:
+            raise serializers.ValidationError("Пароль обязателен")
 
+        user = None
+        
+        # Если передан login
+        if login:
+            # Пробуем как username
+            user = authenticate(username=login, password=password)
+            # Если не нашлось — пробуем как email
+            if not user:
+                try:
+                    user_obj = User.objects.get(email=login)
+                    user = authenticate(username=user_obj.username, password=password)
+                except User.DoesNotExist:
+                    pass
+        
+        # Если нет login, но есть username
+        if not user and username:
+            user = authenticate(username=username, password=password)
+        
+        # Если нет login и username, но есть email
+        if not user and email:
+            try:
+                user_obj = User.objects.get(email=email)
+                user = authenticate(username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
+
+        if user and user.is_active:
+            data['user'] = user
+            return data
+        
+        raise serializers.ValidationError("Неверные учётные данные")
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

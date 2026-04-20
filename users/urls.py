@@ -14,4 +14,6 @@ urlpatterns = [
     path('shop/avatars/<int:avatar_id>/activate/', views.activate_avatar, name='activate-avatar'),
     path('shop/my-avatars/', views.my_avatars, name='my-avatars'),
     path('shop/coins/', views.my_coins, name='my-coins'),
+    path('profile/', views.profile, name='profile'),
+    path('pomodoro/stats/', views.stats, name='stats'),
 ]

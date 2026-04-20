@@ -185,3 +185,31 @@ def my_avatars(request):
 def my_coins(request):
     """Мои монеты"""
     return Response({'coins': request.user.coins})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    user = request.user
+    active_avatar = UserAvatar.objects.filter(user=user, is_active=True).first()
+    
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'coins': user.coins,
+        'theme': user.theme,
+        'avatar': active_avatar.avatar.image if active_avatar else None,
+        'date_joined': user.date_joined,
+    })
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def stats(request):
+    return Response({
+        'total_work_minutes': 0,
+        'total_breaks_minutes': 0,
+        'completed_tasks': 0,
+        'coins_earned': 0,
+        'daily': [],
+        'weekly': [],
+        'monthly': [],
+    })
