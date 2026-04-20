@@ -19,6 +19,7 @@ function Index() {
     
     const timerRef = useRef(null);
     const audioRef = useRef(null);
+    const isEndingRef = useRef(false);
     const { isAuthenticated } = useAuth();
     
     // Загрузка настроек из localStorage
@@ -39,23 +40,154 @@ function Index() {
         else setTimeLeft(settings.longBreak * 60);
     }, [currentMode, settings]);
     
-    // Воспроизведение звука при завершении таймера
+    // Воспроизведение звука при завершении таймера (20 повторов)
     const playAlarm = useCallback(() => {
         const soundType = localStorage.getItem('customAlarmSoundType');
-        const soundUrls = {
-            default: 'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
-            chime: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3',
-            trill: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3',
-            digital: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'
+        
+        let repeatCount = 0;
+        let isStopped = false;
+        let timeouts = [];
+        let currentAudioContext = null;
+        
+        // Сохраняем функцию остановки
+        window.stopAlarmSound = () => {
+            isStopped = true;
+            timeouts.forEach(tid => clearTimeout(tid));
+            timeouts = [];
+            if (currentAudioContext) {
+                currentAudioContext.close();
+                currentAudioContext = null;
+            }
         };
-        const soundUrl = soundUrls[soundType] || soundUrls.default;
-        if (audioRef.current) {
-            audioRef.current.src = soundUrl;
-            audioRef.current.loop = false;
-            audioRef.current.volume = 0.5;
-            audioRef.current.play().catch(e => console.log('Audio error:', e));
-        }
+        
+        const playSoundOnce = (callback) => {
+            if (isStopped) {
+                if (callback) callback();
+                return;
+            }
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                currentAudioContext = audioContext;
+                if (audioContext.state === 'suspended') audioContext.resume();
+                
+                if (soundType === 'default') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.type = 'sine';
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.3;
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.8);
+                    osc.stop(audioContext.currentTime + 0.8);
+                    const tid = setTimeout(() => {
+                        if (currentAudioContext === audioContext) {
+                            audioContext.close();
+                            currentAudioContext = null;
+                        }
+                        if (callback && !isStopped) callback();
+                    }, 800);
+                    timeouts.push(tid);
+                    
+                } else if (soundType === 'trill') {
+                    const playNote = (freq, duration, delay) => {
+                        const tid = setTimeout(() => {
+                            if (isStopped) return;
+                            const osc = audioContext.createOscillator();
+                            const gain = audioContext.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioContext.destination);
+                            osc.type = 'sine';
+                            osc.frequency.value = freq;
+                            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+                            osc.start();
+                            osc.stop(audioContext.currentTime + duration);
+                        }, delay);
+                        timeouts.push(tid);
+                    };
+                    playNote(880, 0.15, 0);
+                    playNote(1046.50, 0.15, 150);
+                    playNote(880, 0.15, 300);
+                    playNote(1046.50, 0.15, 450);
+                    playNote(880, 0.2, 600);
+                    playNote(1046.50, 0.3, 800);
+                    const tid = setTimeout(() => {
+                        if (currentAudioContext === audioContext) {
+                            audioContext.close();
+                            currentAudioContext = null;
+                        }
+                        if (callback && !isStopped) callback();
+                    }, 1200);
+                    timeouts.push(tid);
+                    
+                } else if (soundType === 'chime') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.type = 'sine';
+                    osc.frequency.value = 523.25;
+                    gain.gain.value = 0.3;
+                    osc.start();
+                    const tid1 = setTimeout(() => { if (osc && !isStopped) osc.frequency.value = 659.25; }, 150);
+                    const tid2 = setTimeout(() => { if (osc && !isStopped) osc.frequency.value = 783.99; }, 300);
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.8);
+                    osc.stop(audioContext.currentTime + 0.8);
+                    timeouts.push(tid1, tid2);
+                    const tid = setTimeout(() => {
+                        if (currentAudioContext === audioContext) {
+                            audioContext.close();
+                            currentAudioContext = null;
+                        }
+                        if (callback && !isStopped) callback();
+                    }, 800);
+                    timeouts.push(tid);
+                    
+                } else if (soundType === 'digital') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.type = 'square';
+                    osc.frequency.value = 440;
+                    gain.gain.value = 0.3;
+                    osc.start();
+                    const tid1 = setTimeout(() => { if (osc && !isStopped) osc.frequency.value = 880; }, 100);
+                    const tid2 = setTimeout(() => { if (osc && !isStopped) osc.frequency.value = 440; }, 200);
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.6);
+                    osc.stop(audioContext.currentTime + 0.6);
+                    timeouts.push(tid1, tid2);
+                    const tid = setTimeout(() => {
+                        if (currentAudioContext === audioContext) {
+                            audioContext.close();
+                            currentAudioContext = null;
+                        }
+                        if (callback && !isStopped) callback();
+                    }, 600);
+                    timeouts.push(tid);
+                }
+            } catch (e) { if (callback) callback(); }
+        };
+        
+        const playRepeat = () => {
+            if (isStopped) return;
+            if (repeatCount >= 20) return;
+            repeatCount++;
+            playSoundOnce(() => {
+                if (!isStopped && repeatCount < 20) {
+                    const tid = setTimeout(playRepeat, 500);
+                    timeouts.push(tid);
+                }
+            });
+        };
+        
+        playRepeat();
+        
         setShowSoundPanel(true);
+        
         if (Notification.permission === 'granted') {
             const modeText = currentMode === 'work' ? 'Работа' : (currentMode === 'shortBreak' ? 'Отдых' : 'Большой перерыв');
             new Notification('⏰ FocusFlow', {
@@ -67,28 +199,33 @@ function Index() {
         } else if (Notification.permission === 'default') {
             Notification.requestPermission();
         }
+        
         if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
     }, [currentMode]);
     
     const stopAlarm = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
+        if (window.stopAlarmSound) {
+            window.stopAlarmSound();
         }
         setShowSoundPanel(false);
     };
     
     const startTimer = useCallback(() => { if (!isRunning) setIsRunning(true); }, [isRunning]);
     
-    // Обработка окончания времени
+    // Обработка окончания времени с защитой от двойного вызова
     const handleTimeEnd = useCallback(async () => {
+        if (isEndingRef.current) return;
+        isEndingRef.current = true;
+        
         setIsRunning(false);
         playAlarm();
+        
         const duration = currentMode === 'work' ? settings.work : (currentMode === 'shortBreak' ? settings.shortBreak : settings.longBreak);
         if (isAuthenticated && currentMode === 'work') {
             try { await pomodoroAPI.saveSession({ duration_minutes: duration }); } 
             catch (error) { console.error('Failed to save session:', error); }
         }
+        
         if (currentMode === 'work') {
             const newCycles = workCyclesCompleted + 1;
             setWorkCyclesCompleted(newCycles);
@@ -97,7 +234,10 @@ function Index() {
         } else {
             setCurrentMode('work');
         }
+        
         startTimer();
+        
+        setTimeout(() => { isEndingRef.current = false; }, 1000);
     }, [currentMode, isAuthenticated, playAlarm, settings, startTimer, workCyclesCompleted]);
     
     // Основной цикл таймера
@@ -211,7 +351,7 @@ function Index() {
                         </div>
                     </div>
                     <div className="setting-item">
-                        <label><i className="fa-solid fa-rotate-right"></i> Циклов до большого</label>
+                        <label><i className="fa-solid fa-rotate-right"></i> Циклов до большого перерыва</label>
                         <div className="slider-container">
                             <input type="range" className="slider" min="1" max="10" value={settings.cyclesBeforeLongBreak} onChange={(e) => updateSetting('cyclesBeforeLongBreak', parseInt(e.target.value, 10))} />
                             <input type="number" className="number-input" min="1" max="10" value={settings.cyclesBeforeLongBreak} onChange={(e) => updateSetting('cyclesBeforeLongBreak', parseInt(e.target.value, 10))} />

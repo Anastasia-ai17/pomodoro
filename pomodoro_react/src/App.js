@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Base from './components/base/Base';
 import Index from './components/index/Index';
@@ -12,7 +12,23 @@ import './styles/global.css';
 function App() {
     const { loading } = useAuth();
 
-    // Показываем загрузку пока проверяется авторизация
+    // Применение кастомной темы при загрузке
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('activeTheme');
+        const body = document.body;
+        
+        // Удаляем все темы
+        const themes = ['default', 'forest', 'twilight', 'dream'];
+        themes.forEach(theme => body.classList.remove(`theme-${theme}`));
+        
+        // Применяем сохранённую тему
+        if (savedTheme && savedTheme !== 'default') {
+            body.classList.add(`theme-${savedTheme}`);
+        } else {
+            body.classList.add('theme-default');
+        }
+    }, []);
+
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '20px' }}>
