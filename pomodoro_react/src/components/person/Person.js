@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI, pomodoroAPI } from '../../services/api';
@@ -7,7 +7,7 @@ import '../../styles/person.css';
 function Person() {
     const { user, updateUser, logout } = useAuth();
     const navigate = useNavigate();
-    const [birthdate, setBirthdate] = useState('');
+    const [, setBirthdate] = useState('');
     const [birthdateDay, setBirthdateDay] = useState('');
     const [birthdateMonth, setBirthdateMonth] = useState('');
     const [birthdateYear, setBirthdateYear] = useState('');
@@ -20,7 +20,7 @@ function Person() {
     const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
     const [stats, setStats] = useState({ today: 0, week: 0, month: 0 });
 
-    const allAvatars = [
+    const allAvatars = useMemo(() => [
         { id: 'fa-dog', name: 'Корги', emoji: '🐶', default: true },
         { id: 'fa-cat', name: 'Кот', emoji: '🐱', default: true },
         { id: 'fa-fish', name: 'Рыбка', emoji: '🐟', default: true },
@@ -30,7 +30,7 @@ function Person() {
         { id: 'fa-fox', name: 'Лисёнок', emoji: '🦊', price: 300 },
         { id: 'fa-panda', name: 'Панда', emoji: '🐼', price: 350 },
         { id: 'fa-penguin', name: 'Пингвин', emoji: '🐧', price: 300 }
-    ];
+    ], []);
     const [availableAvatars, setAvailableAvatars] = useState([]);
 
     const loadAvatars = useCallback(() => {
@@ -39,7 +39,7 @@ function Person() {
         if (purchased) purchasedIds = JSON.parse(purchased);
         else { purchasedIds = allAvatars.filter(a => a.default).map(a => a.id); localStorage.setItem('purchasedAvatars', JSON.stringify(purchasedIds)); }
         setAvailableAvatars(allAvatars.filter(avatar => purchasedIds.includes(avatar.id)));
-    }, []);
+    }, [allAvatars]);
 
     const loadUserData = useCallback(async () => {
         if (isSaving || hasLocalAvatarChange) return;

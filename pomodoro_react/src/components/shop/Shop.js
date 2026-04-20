@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import '../../styles/shop.css';
 
 // Звуки для магазина (Web Audio API)
@@ -88,8 +89,8 @@ const AVAILABLE_SOUNDS = {
 const AVAILABLE_THEMES = {
   default: { name: '🌙 Стандартная', lightBg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', darkBg: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' },
   forest: { name: '🌲 Лесная', lightBg: 'linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%)', darkBg: 'linear-gradient(135deg, #0a2f1f 0%, #051a0f 100%)', price: 500 },
-  ocean: { name: '🌊 Океан', lightBg: 'linear-gradient(135deg, #0f5b82 0%, #0a3a52 100%)', darkBg: 'linear-gradient(135deg, #062c40 0%, #031a26 100%)', price: 500 },
-  sunset: { name: '🌅 Закат', lightBg: 'linear-gradient(135deg, #ea580c 0%, #9a3412 100%)', darkBg: 'linear-gradient(135deg, #5a1e0a 0%, #3a1205 100%)', price: 500 }
+  twilight: { name: '🌅 Рассвет-Закат', lightBg: 'linear-gradient(135deg, #fef08a 0%, #f97316 50%, #ec4899 100%)', darkBg: 'linear-gradient(135deg, #451a03 0%, #7f1d1d 50%, #831843 100%)', price: 500 },
+  dream: { name: '🎀 Розовая мечта', lightBg: 'linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 50%, #f472b6 100%)', darkBg: 'linear-gradient(135deg, #4c0519 0%, #9d174d 50%, #be185d 100%)', price: 500 },
 };
 
 // Доступные аватары
@@ -107,6 +108,7 @@ const AVAILABLE_AVATARS = [
 
 function Shop() {
   const { isAuthenticated } = useAuth();
+  const { theme } = useTheme();
   const [coins, setCoins] = useState(0);
   const [purchasedAvatars, setPurchasedAvatars] = useState([]);
   const [purchasedThemes, setPurchasedThemes] = useState([]);
@@ -141,15 +143,21 @@ function Shop() {
     
     const savedSound = localStorage.getItem('activeSound');
     if (savedSound) setActiveSound(savedSound);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, theme]);
 
   const applyTheme = (themeId) => {
     const body = document.body;
-    Object.keys(AVAILABLE_THEMES).forEach(theme => body.classList.remove(`theme-${theme}`));
-    if (themeId !== 'default') body.classList.add(`theme-${themeId}`);
+    Object.keys(AVAILABLE_THEMES).forEach(theme => {
+        body.classList.remove(`theme-${theme}`);
+    });
+    if (themeId !== 'default') {
+        body.classList.add(`theme-${themeId}`);
+    } else {
+        body.classList.add('theme-default');  // ← добавить эту строку
+    }
     setActiveTheme(themeId);
     localStorage.setItem('activeTheme', themeId);
-  };
+};
 
   const purchaseAvatar = (avatar) => {
     if (!isAuthenticated) {
