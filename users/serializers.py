@@ -3,7 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from .models import User
+from .models import Avatar, User, UserAvatar
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -115,3 +115,19 @@ class PasswordChangeSerializer(serializers.Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save(update_fields=['password'])
         return user
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Avatar
+        fields = ('id', 'name', 'image', 'price_coins', 'is_default')
+
+
+class UserAvatarSerializer(serializers.ModelSerializer):
+    avatar = AvatarSerializer(read_only=True)
+    avatar_id = serializers.IntegerField(write_only=True, required=False)
+
+    class Meta:
+        model = UserAvatar
+        fields = ('id', 'avatar', 'avatar_id', 'purchased_at', 'is_active')
+        read_only_fields = ('id', 'purchased_at')

@@ -1,12 +1,16 @@
+from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import Avatar, UserAvatar
 from .serializers import (
+    AvatarSerializer,
     LoginSerializer,
     PasswordChangeSerializer,
+    UserAvatarSerializer,
     UserRegistrationSerializer,
     UserSerializer,
     UserThemeSerializer,
@@ -145,3 +149,93 @@ def guest_theme(request):
     )
     response.set_cookie('theme', theme, max_age=60 * 60 * 24 * 365)
     return response
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def shop_avatars(request):
+    avatars = Avatar.objects.all()
+    serializer = AvatarSerializer(avatars, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def buy_avatar(request, avatar_id):
+    user = request.user
+
+    try:
+        avatar = Avatar.objects.get(pk=avatar_id)
+    except Avatar.DoesNotExist:
+        return Response({'error': 'Аватар не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+    if UserAvatar.objects.filter(user=user, avatar=avatar).exists():
+        return Response(
+            {'error': 'Вы уже купили этот аватар'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if user.coins < avatar.price_coins:
+        return Response(
+            {
+                'error': (
+                    f'Недостаточно монет. Нужно: {avatar.price_coins}, '
+                    f'у вас: {user.coins}'
+                )
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    with transaction.atomic():
+        user.coins -= avatar.price_coins
+        user.save(update_fields=['coins'])
+        UserAvatar.objects.create(user=user, avatar=avatar, is_active=False)
+
+    return Response(
+        {
+            'message': f'Аватар "{avatar.name}" куплен!',
+            'coins_left': user.coins,
+            'avatar_id': avatar.id,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def activate_avatar(request, avatar_id):
+    user = request.user
+
+    try:
+        user_avatar = UserAvatar.objects.get(user=user, avatar_id=avatar_id)
+    except UserAvatar.DoesNotExist:
+        return Response(
+            {'error': 'Аватар не найден в вашей коллекции'},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    UserAvatar.objects.filter(user=user, is_active=True).update(is_active=False)
+    user_avatar.is_active = True
+    user_avatar.save(update_fields=['is_active'])
+
+    return Response(
+        {
+            'message': 'Аватар активирован',
+            'active_avatar_id': avatar_id,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_avatars(request):
+    user_avatars = UserAvatar.objects.filter(user=request.user).select_related('avatar')
+    serializer = UserAvatarSerializer(user_avatars, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_coins(request):
+    return Response({'coins': request.user.coins}, status=status.HTTP_200_OK)

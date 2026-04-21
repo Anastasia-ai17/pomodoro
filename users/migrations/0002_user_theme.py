@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='theme',
-            field=models.CharField(choices=[('light', 'Light'), ('dark', 'Dark'), ('system', 'System')], default='system', help_text='Тема оформления: светлая, тёмная или системная', max_length=10),
+            field=models.CharField(
+                choices=[('light', 'Light'), ('dark', 'Dark'), ('system', 'System')],
+                default='system',
+                help_text='Тема оформления: светлая, тёмная или системная',
+                max_length=10,
+            ),
         ),
     ]
