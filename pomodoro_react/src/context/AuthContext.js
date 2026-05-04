@@ -69,8 +69,24 @@ export const AuthProvider = ({ children }) => {
     }, [persistAuth]);
 
     const logout = useCallback(async () => {
-        try { await authAPI.logout(); } catch (error) {}
-        finally { clearAuth(); }
+        try {
+            await authAPI.logout();
+        } catch (error) {}
+        finally { 
+            clearAuth();
+            // Сброс темы гостя на дефолтную при выходе из ЛК
+            document.body.classList.remove('theme-forest', 'theme-twilight', 'theme-dream');
+            document.body.classList.add('theme-default');
+            localStorage.setItem('activeTheme', 'default');
+            // Также сбрасываем звук на дефолтный
+            localStorage.setItem('activeSound', 'default');
+            localStorage.removeItem('customAlarmSoundType');
+            // Сбрасываем состояние таймера
+            localStorage.removeItem('timerMode');
+            localStorage.removeItem('timerTimeLeft');
+            localStorage.removeItem('timerCycles');
+            localStorage.removeItem('timerRunning');
+        }
     }, [clearAuth]);
 
     // Обновление данных пользователя в state и localStorage

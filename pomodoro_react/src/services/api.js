@@ -58,6 +58,7 @@ export const authAPI = {
 export const pomodoroAPI = {
     getStats: () => api.get('/pomodoro/stats/'),
     saveSession: (data) => api.post('/pomodoro/sessions/', data),
+    getCoins: () => api.get('/shop/coins/'),  // <-- ДОБАВИТЬ
 };
 
 // API темы оформления

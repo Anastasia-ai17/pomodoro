@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { pomodoroAPI } from '../../services/api';
 import '../../styles/shop.css';
 
 // Звуки для магазина (Web Audio API)
@@ -117,32 +118,54 @@ function Shop() {
   const [activeSound, setActiveSound] = useState('default');
   const [purchaseMessage, setPurchaseMessage] = useState('');
 
-  // Загрузка данных
-  useEffect(() => {
+  // Загрузка монет с сервера
+  const loadCoins = async () => {
     if (!isAuthenticated) {
       setCoins(0);
-      return;
+      return 0;
+    }
+    try {
+      const response = await pomodoroAPI.getCoins();
+      if (response.data && response.data.coins !== undefined) {
+        const serverCoins = response.data.coins;
+        setCoins(serverCoins);
+        localStorage.setItem('userCoins', serverCoins);
+        return serverCoins;
+      }
+    } catch (error) {
+      console.error('Failed to load coins from server:', error);
     }
     const savedCoins = localStorage.getItem('userCoins');
-    setCoins(savedCoins ? parseInt(savedCoins) : 100);
+    const localCoins = savedCoins ? parseInt(savedCoins) : 100;
+    setCoins(localCoins);
+    return localCoins;
+  };
+
+  // Загрузка данных
+  useEffect(() => {
+    const loadData = async () => {
+      await loadCoins();
+      
+      const savedAvatars = localStorage.getItem('purchasedAvatars');
+      if (savedAvatars) setPurchasedAvatars(JSON.parse(savedAvatars));
+      else { const defaultAvatars = AVAILABLE_AVATARS.filter(a => a.default).map(a => a.id); setPurchasedAvatars(defaultAvatars); localStorage.setItem('purchasedAvatars', JSON.stringify(defaultAvatars)); }
+      
+      const savedThemes = localStorage.getItem('purchasedThemes');
+      if (savedThemes) setPurchasedThemes(JSON.parse(savedThemes));
+      else setPurchasedThemes(['default']);
+      
+      const savedSounds = localStorage.getItem('purchasedSounds');
+      if (savedSounds) setPurchasedSounds(JSON.parse(savedSounds));
+      else setPurchasedSounds(['default']);
+      
+      const savedTheme = localStorage.getItem('activeTheme');
+      if (savedTheme) { setActiveTheme(savedTheme); applyTheme(savedTheme); }
+      
+      const savedSound = localStorage.getItem('activeSound');
+      if (savedSound) setActiveSound(savedSound);
+    };
     
-    const savedAvatars = localStorage.getItem('purchasedAvatars');
-    if (savedAvatars) setPurchasedAvatars(JSON.parse(savedAvatars));
-    else { const defaultAvatars = AVAILABLE_AVATARS.filter(a => a.default).map(a => a.id); setPurchasedAvatars(defaultAvatars); localStorage.setItem('purchasedAvatars', JSON.stringify(defaultAvatars)); }
-    
-    const savedThemes = localStorage.getItem('purchasedThemes');
-    if (savedThemes) setPurchasedThemes(JSON.parse(savedThemes));
-    else setPurchasedThemes(['default']);
-    
-    const savedSounds = localStorage.getItem('purchasedSounds');
-    if (savedSounds) setPurchasedSounds(JSON.parse(savedSounds));
-    else setPurchasedSounds(['default']);
-    
-    const savedTheme = localStorage.getItem('activeTheme');
-    if (savedTheme) { setActiveTheme(savedTheme); applyTheme(savedTheme); }
-    
-    const savedSound = localStorage.getItem('activeSound');
-    if (savedSound) setActiveSound(savedSound);
+    loadData();
   }, [isAuthenticated, theme]);
 
   const applyTheme = (themeId) => {
@@ -153,11 +176,11 @@ function Shop() {
     if (themeId !== 'default') {
         body.classList.add(`theme-${themeId}`);
     } else {
-        body.classList.add('theme-default');  // ← добавить эту строку
+        body.classList.add('theme-default');
     }
     setActiveTheme(themeId);
     localStorage.setItem('activeTheme', themeId);
-};
+  };
 
   const purchaseAvatar = (avatar) => {
     if (!isAuthenticated) {
@@ -218,7 +241,7 @@ function Shop() {
     setTimeout(() => setPurchaseMessage(''), 3000);
   };
 
-  const getDailyBonus = () => {
+  const getDailyBonus = async () => {
     if (!isAuthenticated) {
       setPurchaseMessage('🔒 Авторизуйтесь, чтобы получать бонусы!');
       setTimeout(() => setPurchaseMessage(''), 3000);

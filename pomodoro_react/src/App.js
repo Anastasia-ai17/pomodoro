@@ -7,6 +7,7 @@ import Regist from './components/regist/Regist';
 import Person from './components/person/Person';
 import Shop from './components/shop/Shop';
 import { useAuth } from './context/AuthContext';
+import { TimerProvider } from './context/TimerContext';
 import './styles/global.css';
 
 function App() {
@@ -38,15 +39,17 @@ function App() {
     }
 
     return (
-        <Routes>
-            <Route path="/" element={<Base />}>
-                <Route index element={<Index />} />
-                <Route path="auth" element={<Auth />} />
-                <Route path="regist" element={<Regist />} />
-                <Route path="person" element={<Person />} />
-                <Route path="shop" element={<Shop />} />
-            </Route>
-        </Routes>
+        <TimerProvider>
+            <Routes>
+                <Route path="/" element={<Base />}>
+                    <Route index element={<Index />} />
+                    <Route path="auth" element={<Auth />} />
+                    <Route path="regist" element={<Regist />} />
+                    <Route path="person" element={<Person />} />
+                    <Route path="shop" element={<Shop />} />
+                </Route>
+            </Routes>
+        </TimerProvider>
     );
 }
 
